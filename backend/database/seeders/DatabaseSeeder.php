@@ -21,37 +21,7 @@ class DatabaseSeeder extends Seeder
             'username' => 'sudox785',
             'email' => 'fdjuricic98@gmail.com',
             'password' => Hash::make('ub2015!!'),
-            'created_at' => $now,
-            'updated_at' => $now,
-        ]);
-
-        $adminId = DB::table('roles')->insertGetId([
-            'name' => 'Administrator',
-            'created_at' => $now,
-            'updated_at' => $now,
-        ]);
-
-        DB::table('roles')->insert([
-            'name' => 'Subthreadit Admin',
-            'created_at' => $now,
-            'updated_at' => $now,
-        ]);
-
-        DB::table('roles')->insert([
-            'name' => 'Moderator',
-            'created_at' => $now,
-            'updated_at' => $now,
-        ]);
-
-        DB::table('roles')->insert([
-            'name' => 'Regular User',
-            'created_at' => $now,
-            'updated_at' => $now,
-        ]);
-
-        DB::table('role_user')->insert([
-            'role_id' => $adminId,
-            'user_id' => $userId,
+            'is_admin' => 1,
             'created_at' => $now,
             'updated_at' => $now,
         ]);
