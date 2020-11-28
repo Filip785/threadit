@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PostController;
+use App\Http\Controllers\CommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,3 +30,5 @@ Route::get('post', [PostController::class, 'index']);
 Route::middleware('auth:api')->get('post/{id}', [PostController::class, 'get']);
 Route::middleware('auth:api')->post('post/create', [PostController::class, 'store']);
 Route::middleware('auth:api')->delete('post/delete/{id}', [PostController::class, 'delete']);
+
+Route::middleware('auth:api')->post('comment/create', [CommentController::class, 'store']);
