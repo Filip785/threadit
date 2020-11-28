@@ -2,13 +2,21 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-use App\Models\Post;
-
+/**
+ * @mixin Builder
+ * @mixin \Illuminate\Database\Query\Builder
+ *
+ * @property string username
+ * @property string email
+ * @property string password
+ * @property int is_admin
+ */
 class User extends Authenticatable implements JWTSubject
 {
     use HasFactory, Notifiable;
@@ -22,6 +30,7 @@ class User extends Authenticatable implements JWTSubject
         'username',
         'email',
         'password',
+        'is_admin'
     ];
 
     /**

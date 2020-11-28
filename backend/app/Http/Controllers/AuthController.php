@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -21,7 +22,7 @@ class AuthController extends Controller {
             'username.required' => 'Please enter your username.',
             'password.required' => 'Please enter your password.',
         ]);
-        
+
         $token = auth()->attempt($credentials);
 
         if (!$token) {
@@ -55,10 +56,10 @@ class AuthController extends Controller {
             'password.min' => 'Your password needs to be at least 6 characters in length.',
         ]);
 
-        $user = User::create([
-            'username' => $request->username,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
+        User::create([
+            'username' => $request->get('username'),
+            'email' => $request->get('email'),
+            'password' => Hash::make($request->get('password')),
         ]);
 
         return response()->json(['status' => 200]);
@@ -69,9 +70,9 @@ class AuthController extends Controller {
      *
      * @param  string $token
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    protected function respondWithToken($token) {
+    protected function respondWithToken(string $token) {
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',

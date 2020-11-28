@@ -2,10 +2,19 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\User;
 
+/**
+ * @mixin Builder
+ * @mixin \Illuminate\Database\Query\Builder
+ *
+ * @property string post_title
+ * @property string description
+ * @property int user_id
+ * @property int upvotes
+ */
 class Post extends Model
 {
     use HasFactory;

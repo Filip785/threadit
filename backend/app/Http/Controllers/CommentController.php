@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Models\Comment;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
 
 class CommentController extends Controller
 {
@@ -19,8 +18,10 @@ class CommentController extends Controller
             'content.required' => 'Please enter your comment.'
         ]);
 
-        if($request->reply) {
-            $ids = explode('|', $request->reply['longId']);
+        $commentReply = $request->input('reply');
+
+        if($commentReply) {
+            $ids = explode('|', $commentReply['longId']);
             $replyCount = count($ids);
 
             $commentParent = Comment::find($ids[0]);
@@ -37,7 +38,7 @@ class CommentController extends Controller
                 $commentParent->update();
             } else {
                 unset($ids[0]);
-                
+
                 $refToUpdate = &$commentParentReplies;
 
                 foreach($ids as $k => $id) {
@@ -53,11 +54,7 @@ class CommentController extends Controller
             }
         } else {
             // comment is reply directly to the post (treated like a main comment or a parent comment)
-            Comment::create([
-                'content' => $request->content,
-                'user_id' => $request->user_id,
-                'post_id' => $request->post_id
-            ]);
+            Comment::create($this->getInsertObject($request));
         }
 
         return response()->json(['success' => 'Comment created!'], 200);
@@ -75,14 +72,19 @@ class CommentController extends Controller
         //
     }
 
-    protected function getInsertObject($request, $now) {
-        return [
-            'content' => $request->content,
-            'user_id' => $request->user_id,
-            'post_id' => $request->post_id,
-            'replies' => [],
-            'created_at' => $now,
-            'updated_at' => $now
+    protected function getInsertObject(Request $request, $now = null) {
+        $insertObject = [
+            'content' => $request->get('content'),
+            'user_id' => $request->get('user_id'),
+            'post_id' => $request->get('post_id'),
+            'replies' => []
         ];
+
+        if($now) {
+            $insertObject['created_at'] = $now;
+            $insertObject['updated_at'] = $now;
+        }
+
+        return $insertObject;
     }
 }

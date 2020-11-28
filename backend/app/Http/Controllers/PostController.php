@@ -19,11 +19,11 @@ class PostController extends Controller
             'post_title.required' => 'Please enter post title.',
             'description.required' => 'Please enter description.',
         ]);
-        
+
         Post::create([
-            'post_title' => $request->post_title,
-            'description' => $request->description,
-            'user_id' => $request->user_id,
+            'post_title' => $request->get('post_title'),
+            'description' => $request->get('description'),
+            'user_id' => $request->get('user_id'),
             'upvotes' => 1,
         ]);
 
@@ -32,7 +32,7 @@ class PostController extends Controller
 
     public function get(int $id) {
         $post = Post::find($id);
-        
+
         if(!$post) {
             return response()->json(['error' => 'Not Found!'], 404);
         }
@@ -44,12 +44,16 @@ class PostController extends Controller
         $post = Post::find($id);
         $user = auth()->user();
 
-        if(!$user->is_admin && !($post->author_id === $user->id)) {
-            return null;
+        if(!$user->is_admin && !($post->user_id === $user->id)) {
+            return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        $post->delete();
-        
+        try {
+            $post->delete();
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Error while deleting post!'], 400);
+        }
+
         return response()->json(['success' => 'Deleted!'], 200);
     }
 }
