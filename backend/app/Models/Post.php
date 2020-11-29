@@ -10,10 +10,10 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin Builder
  * @mixin \Illuminate\Database\Query\Builder
  *
+ * @property int id
  * @property string post_title
  * @property string description
  * @property int user_id
- * @property int upvotes
  */
 class Post extends Model
 {
@@ -27,8 +27,7 @@ class Post extends Model
     protected $fillable = [
         'post_title',
         'description',
-        'user_id',
-        'upvotes'
+        'user_id'
     ];
 
     public function user() {

@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Comment;
+use App\Models\CommentsUpvote;
+use App\Models\CommentsUser;
 use Illuminate\Http\Request;
 
 class CommentController extends Controller
@@ -19,8 +21,10 @@ class CommentController extends Controller
         ]);
 
         $commentReply = $request->input('reply');
+        $postTreeId = null;
 
         if($commentReply) {
+            $postTreeId = $commentReply['longId'];
             $ids = explode('|', $commentReply['longId']);
             $replyCount = count($ids);
 
@@ -32,30 +36,50 @@ class CommentController extends Controller
             // perhaps have another table that stores not normalized references to a specific user comments?
 
             if($replyCount === 1) {
-                $commentParentReplies[$commentParentRepliesCount + 1] = $this->getInsertObject($request, $now);
-
-                $commentParent->replies = json_encode($commentParentReplies);
-                $commentParent->update();
+                $addId = $commentParentRepliesCount + 1;
+                $postTreeId = "$postTreeId||$addId";
+                $commentParentReplies[$addId] = $this->getInsertObject($request, $postTreeId, $now);
             } else {
                 unset($ids[0]);
 
                 $refToUpdate = &$commentParentReplies;
 
-                foreach($ids as $k => $id) {
+                foreach($ids as $id) {
                     $refToUpdate = &$refToUpdate[$id]['replies'];
                 }
 
                 $replyNextIndex = count($refToUpdate) + 1;
-
-                $refToUpdate[$replyNextIndex] = $this->getInsertObject($request, $now);
-
-                $commentParent->replies = json_encode($commentParentReplies);
-                $commentParent->update();
+                $refToUpdate[$replyNextIndex] = $this->getInsertObject($request, $postTreeId, $now);
             }
+
+            $commentParent->replies = json_encode($commentParentReplies);
+            $commentParent->update();
         } else {
             // comment is reply directly to the post (treated like a main comment or a parent comment)
-            Comment::create($this->getInsertObject($request));
+            $comment = Comment::create($this->getInsertObject($request));
+
+            $postTreeId = strval($comment->id);
         }
+
+        $userId = $request->get('user_id');
+        $commentsUserItem = CommentsUser::select('id', 'all_comments')->where(['user_id' => $userId])->first();
+        $postId = $request->get('post_id');
+
+        $allCommentsDecoded = json_decode($commentsUserItem->all_comments, true);
+
+        if(!isset($allCommentsDecoded[$postId])) {
+            $allCommentsDecoded[$postId] = [];
+        }
+
+        $allCommentsDecoded[$postId][] = $postTreeId;
+        $commentsUserItem->all_comments = json_encode($allCommentsDecoded);
+        $commentsUserItem->update();
+
+        // add initial upvote from the user that posted comment
+        CommentsUpvote::create([
+            'user_id' => $userId,
+            'pattern' => $postTreeId
+        ]);
 
         return response()->json(['success' => 'Comment created!'], 200);
     }
@@ -72,7 +96,7 @@ class CommentController extends Controller
         //
     }
 
-    protected function getInsertObject(Request $request, $now = null) {
+    protected function getInsertObject(Request $request, $pattern = null, $now = null) {
         $insertObject = [
             'content' => $request->get('content'),
             'user_id' => $request->get('user_id'),
@@ -81,6 +105,7 @@ class CommentController extends Controller
         ];
 
         if($now) {
+            $insertObject['pattern'] = $pattern;
             $insertObject['created_at'] = $now;
             $insertObject['updated_at'] = $now;
         }

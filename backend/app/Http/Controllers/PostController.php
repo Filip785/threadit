@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Post;
 use Illuminate\Http\Request;
+
+use App\Models\Post;
+use App\Models\Comment;
 
 class PostController extends Controller
 {
@@ -23,8 +25,7 @@ class PostController extends Controller
         Post::create([
             'post_title' => $request->get('post_title'),
             'description' => $request->get('description'),
-            'user_id' => $request->get('user_id'),
-            'upvotes' => 1,
+            'user_id' => $request->get('user_id')
         ]);
 
         return response()->json(['success' => 'Post created!'], 200);
@@ -37,7 +38,14 @@ class PostController extends Controller
             return response()->json(['error' => 'Not Found!'], 404);
         }
 
-        return $post;
+        $comments = Comment::with(['user:id,username'])->where(['post_id' => $post->id])->get();
+
+        $comments = $this->comments_replies_transform($comments);
+
+        return [
+            'post' => $post,
+            'comments' => $comments
+        ];
     }
 
     public function delete($id) {
@@ -55,5 +63,21 @@ class PostController extends Controller
         }
 
         return response()->json(['success' => 'Deleted!'], 200);
+    }
+
+    protected function comments_replies_transform($commentsArray) {
+        foreach($commentsArray as &$item) {
+            if(!is_array($item['replies'])) {
+                $item['replies'] = json_decode($item['replies'], true);
+            }
+            
+            $replyCount = count($item['replies']);
+
+            if($replyCount > 0) {
+                $item['replies'] = $this->comments_replies_transform($item['replies']);
+            }
+        }
+
+        return $commentsArray;
     }
 }

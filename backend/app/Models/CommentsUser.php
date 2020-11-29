@@ -10,21 +10,14 @@ use Illuminate\Database\Eloquent\Model;
  * @mixin Builder
  * @mixin \Illuminate\Database\Query\Builder
  *
- * @property string content
- * @property array|string replies
  * @property int user_id
- * @property int post_id
+ * @property array|string all_comments
  */
-class Comment extends Model {
+class CommentsUser extends Model {
     use HasFactory;
 
     protected $fillable = [
-        'content',
         'user_id',
-        'post_id'
+        'all_comments'
     ];
-
-    public function user() {
-        return $this->belongsTo(User::class);
-    }
 }

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 use App\Models\User;
+use App\Models\CommentsUser;
 
 class AuthController extends Controller {
     public function __construct() {
@@ -56,10 +57,14 @@ class AuthController extends Controller {
             'password.min' => 'Your password needs to be at least 6 characters in length.',
         ]);
 
-        User::create([
+        $user = User::create([
             'username' => $request->get('username'),
             'email' => $request->get('email'),
             'password' => Hash::make($request->get('password')),
+        ]);
+
+        CommentsUser::create([
+            'user_id' => $user->id
         ]);
 
         return response()->json(['status' => 200]);

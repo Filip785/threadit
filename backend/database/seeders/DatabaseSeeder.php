@@ -25,5 +25,11 @@ class DatabaseSeeder extends Seeder
             'created_at' => $now,
             'updated_at' => $now,
         ]);
+
+        DB::table('comments_users')->insert([
+            'user_id' => $userId,
+            'created_at' => $now,
+            'updated_at' => $now
+        ]);
     }
 }

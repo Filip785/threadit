@@ -12,6 +12,7 @@ use Tymon\JWTAuth\Contracts\JWTSubject;
  * @mixin Builder
  * @mixin \Illuminate\Database\Query\Builder
  *
+ * @property int id
  * @property string username
  * @property string email
  * @property string password
@@ -67,5 +68,9 @@ class User extends Authenticatable implements JWTSubject
 
     public function posts() {
         return $this->belongsToMany(Post::class);
+    }
+
+    public function comments() {
+        return $this->hasMany(Comment::class);
     }
 }
