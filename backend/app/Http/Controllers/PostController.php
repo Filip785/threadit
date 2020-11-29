@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\CommentsUpvote;
+use App\Models\PostsUpvote;
 use Illuminate\Http\Request;
 
 use App\Models\Post;
@@ -23,10 +24,17 @@ class PostController extends Controller
             'description.required' => 'Please enter description.',
         ]);
 
-        Post::create([
+        $userId = $request->get('user_id');
+
+        $post = Post::create([
             'post_title' => $request->get('post_title'),
             'description' => $request->get('description'),
-            'user_id' => $request->get('user_id')
+            'user_id' => $userId
+        ]);
+
+        PostsUpvote::create([
+            'user_id' => $userId,
+            'post_id' => $post->id
         ]);
 
         return response()->json(['success' => 'Post created!'], 200);
@@ -38,7 +46,7 @@ class PostController extends Controller
         if(!$post) {
             return response()->json(['error' => 'Not Found!'], 404);
         }
-
+        
         $comments = Comment::with(['user:id,username'])->where(['post_id' => $post->id])->get();
 
         $comments = $this->comments_replies_transform($comments);
@@ -59,6 +67,10 @@ class PostController extends Controller
 
         try {
             $post->delete();
+
+            PostsUpvote::where([
+                'post_id' => $id
+            ])->delete();
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error while deleting post!'], 400);
         }

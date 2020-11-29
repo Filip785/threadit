@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PostsUpvoteController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -36,3 +37,6 @@ Route::middleware('auth:api')->post('comment/create', [CommentController::class,
 
 Route::middleware('auth:api')->post('comment_upvote', [CommentUpvoteController::class, 'store']);
 Route::middleware('auth:api')->delete('comment_remove_upvote', [CommentUpvoteController::class, 'delete']);
+
+Route::middleware('auth:api')->post('post_upvote', [PostsUpvoteController::class, 'store']);
+Route::middleware('auth:api')->delete('post_remove_upvote', [PostsUpvoteController::class, 'delete']);
