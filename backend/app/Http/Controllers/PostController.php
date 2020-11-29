@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CommentsUpvote;
 use Illuminate\Http\Request;
 
 use App\Models\Post;
@@ -70,8 +71,14 @@ class PostController extends Controller
             if(!is_array($item['replies'])) {
                 $item['replies'] = json_decode($item['replies'], true);
             }
-            
+
             $replyCount = count($item['replies']);
+
+            if(isset($item['pattern'])) {
+                $item['voteCount'] = $this->getVoteCount($item['pattern']);
+            } else {
+                $item['voteCount'] = $this->getVoteCount((string) $item->id);
+            }
 
             if($replyCount > 0) {
                 $item['replies'] = $this->comments_replies_transform($item['replies']);
@@ -79,5 +86,9 @@ class PostController extends Controller
         }
 
         return $commentsArray;
+    }
+
+    protected function getVoteCount($pattern) {
+        return CommentsUpvote::where(['pattern' => $pattern])->count();
     }
 }
