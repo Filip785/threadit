@@ -15,7 +15,8 @@ class AuthController extends Controller {
         $this->middleware('auth:api', ['except' => ['login', 'register']]);
     }
 
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
         $credentials = $request->validate([
             'username' => 'required',
             'password' => 'required',
@@ -30,17 +31,13 @@ class AuthController extends Controller {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        return $this->respondWithToken($token);
-    }
+        $user = auth()->user();
 
-    public function logout() {
-        auth()->logout();
-
-        return response()->json(['message' => 'Successfully logged out']);
-    }
-
-    public function refresh() {
-        return $this->respondWithToken(auth()->refresh());
+        return response()->json([
+            'id' => $user->id,
+            'username' => $user->username,
+            'api_token' => $token
+        ]);
     }
 
     public function register(Request $request) {
@@ -68,20 +65,5 @@ class AuthController extends Controller {
         ]);
 
         return response()->json(['status' => 200]);
-    }
-
-    /**
-     * Get the token array structure.
-     *
-     * @param  string $token
-     *
-     * @return JsonResponse
-     */
-    protected function respondWithToken(string $token) {
-        return response()->json([
-            'access_token' => $token,
-            'token_type' => 'bearer',
-            'expires_in' => auth()->factory()->getTTL() * 60
-        ]);
     }
 }
