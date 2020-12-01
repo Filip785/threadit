@@ -2,9 +2,10 @@ import { Formik, FormikProps } from 'formik';
 import React, { useEffect } from 'react';
 import { Button, Container, Row, Col, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 import { string, object } from 'yup';
 import history from '../../../shared/history';
-import { attemptLogin, selectAuthUser } from '../authSlice';
+import { attemptLogin, attemptLoginFailureEnd, attemptRegisterReduce, selectAuthUser, selectLoginError, selectRegistered } from '../authSlice';
 
 interface IAuthenticateForm {
     username: string;
@@ -20,10 +21,16 @@ export default function Authentication() {
     const dispatch = useDispatch();
 
     const authUser = useSelector(selectAuthUser);
+    const loginError = useSelector(selectLoginError);
+    const registered = useSelector(selectRegistered);
 
     useEffect(() => {
         if(authUser) {
             history.push('/');
+        }
+
+        if(registered) {
+            dispatch(attemptRegisterReduce());
         }
     });
 
@@ -47,10 +54,10 @@ export default function Authentication() {
 
                             return (
                                 <Form noValidate onSubmit={handleSubmit} className="d-flex flex-column justify-content-center">
-                                    <Form.Group controlId="formBasicEmail">
+                                    <Form.Group controlId="formBasicUsername">
                                         <Form.Label>Username</Form.Label>
                                         <Form.Control type="text" name="username" value={values.username} onChange={handleChange} isValid={touched.username && !errors.username} />
-                                        <Form.Control.Feedback type='invalid' className='d-block'>
+                                        <Form.Control.Feedback type='invalid' className='d-block' style={{marginTop: '1rem'}}>
                                             {errors.username}
                                         </Form.Control.Feedback>
                                     </Form.Group>
@@ -58,18 +65,23 @@ export default function Authentication() {
                                     <Form.Group controlId="formBasicPassword">
                                         <Form.Label>Password</Form.Label>
                                         <Form.Control type="password" name="password" value={values.password} onChange={handleChange} isValid={touched.password && !errors.password} />
-                                        <Form.Control.Feedback type='invalid' className='d-block'>
+                                        <Form.Control.Feedback type='invalid' className='d-block' style={{marginTop: '1rem'}}>
                                             {errors.password}
                                         </Form.Control.Feedback>
+                                        {loginError && <Form.Control.Feedback type='invalid' className='d-block' style={{marginTop: '1rem'}}>
+                                            Username / password incorrect.
+                                        </Form.Control.Feedback>}
                                     </Form.Group>
 
-                                    <Button variant="primary" type="submit">
+                                    <Button variant="primary" type="submit" onClick={() => dispatch(attemptLoginFailureEnd())}>
                                         Login
                                     </Button>
                                 </Form>
                             );
                         }}
                     </Formik>
+                    
+                    <Link to='/register' style={{marginTop: '1rem'}}>Don't have an account? Register here.</Link>
                 </Col>
             </Row>
         </Container>
