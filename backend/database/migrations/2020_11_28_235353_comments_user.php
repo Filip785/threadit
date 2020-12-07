@@ -16,7 +16,7 @@ class CommentsUser extends Migration
         Schema::create('comments_users', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
-            $table->json('all_comments')->default('[]');
+            $table->json('all_comments');
             $table->timestamps();
         });
     }

@@ -61,7 +61,8 @@ class AuthController extends Controller {
         ]);
 
         CommentsUser::create([
-            'user_id' => $user->id
+            'user_id' => $user->id,
+            'all_comments' => '[]',
         ]);
 
         return response()->json(['status' => 200]);

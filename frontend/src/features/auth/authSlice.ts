@@ -12,6 +12,7 @@ interface AuthState {
     loginError: boolean,
     jwtExpired: boolean,
     registerErrors: RegisterError,
+    registerError: boolean
 }
 
 const initialState: AuthState = {
@@ -19,7 +20,8 @@ const initialState: AuthState = {
     registered: false,
     loginError: false,
     jwtExpired: false,
-    registerErrors: {}
+    registerErrors: {},
+    registerError: false
 };
 
 export const authSlice = createSlice({
@@ -46,6 +48,9 @@ export const authSlice = createSlice({
 
             state.registerErrors = action.payload.errors;
         },
+        attemptRegisterUnknownError(state) {
+            state.registerError = true;
+        },
         attemptRegisterFailureEnd(state) {
             state.registerErrors = {};
         },
@@ -64,11 +69,11 @@ export const authSlice = createSlice({
 
 export const { attemptLoginFailureEnd, attemptRegisterFailureEnd, signOutReduce, jwtExpiredReduce, attemptRegisterReduce } = authSlice.actions;
 
-const { attemptLoginReduce, attemptLoginFailure, attemptRegisterFailureValidation } = authSlice.actions;
+const { attemptLoginReduce, attemptLoginFailure, attemptRegisterFailureValidation, attemptRegisterUnknownError } = authSlice.actions;
 
 export const attemptLogin = (username: string, password: string): AppThunk => async dispatch => {
     try {
-        const response = await axios.post<User>('http://localhost/api/login', { username, password });
+        const response = await axios.post<User>('http://localhost:8080/api/login', { username, password });
 
         dispatch(attemptLoginReduce(response.data));
         localStorage.setItem('authUser', JSON.stringify(response.data));
@@ -80,11 +85,12 @@ export const attemptLogin = (username: string, password: string): AppThunk => as
 
 export const attemptRegister = (username: string, email: string, password: string): AppThunk => async dispatch => {
     try {
-        await axios.post('http://localhost/api/register', { username, email, password });
+        await axios.post('http://localhost:8080/api/register', { username, email, password });
 
         dispatch(attemptRegisterReduce());
     } catch (err) {
         if(!err && !err.response) {
+            dispatch(attemptRegisterUnknownError());
             return;
         }
         console.log('Attempt Register error: ', err.response.data);
@@ -98,6 +104,7 @@ export const selectAuthUser = (state: RootState) => state.auth.user;
 export const selectLoginError = (state: RootState) => state.auth.loginError;
 export const selectRegisterErrors = (state: RootState) => state.auth.registerErrors;
 export const selectRegistered = (state: RootState) => state.auth.registered;
+export const selectRegisterError = (state: RootState) => state.auth.registerError;
 
 export default authSlice.reducer;
 

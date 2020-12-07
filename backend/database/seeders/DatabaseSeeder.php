@@ -28,6 +28,7 @@ class DatabaseSeeder extends Seeder
 
         DB::table('comments_users')->insert([
             'user_id' => $userId,
+            'all_comments' => '[]',
             'created_at' => $now,
             'updated_at' => $now
         ]);

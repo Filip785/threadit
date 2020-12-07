@@ -4,7 +4,7 @@ import { Button, Col, Container, Form, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { object, string } from 'yup';
-import { attemptRegister, attemptRegisterFailureEnd, selectRegistered } from '../authSlice';
+import { attemptRegister, attemptRegisterFailureEnd, selectRegistered, selectRegisterError } from '../authSlice';
 import history from '../../../shared/history';
 import { selectRegisterErrors } from '../authSlice';
 
@@ -24,6 +24,7 @@ export default function Registration() {
     const dispatch = useDispatch();
     const registerErrors = useSelector(selectRegisterErrors);
     const registered = useSelector(selectRegistered);
+    const registerError = useSelector(selectRegisterError);
 
     useEffect(() => {
         if(registered) {
@@ -81,6 +82,10 @@ export default function Registration() {
                                         </Form.Control.Feedback>
                                         {registerErrors.password && <Form.Control.Feedback type='invalid' className='d-block' style={{marginTop: '1rem'}}>
                                             {registerErrors.password}
+                                        </Form.Control.Feedback>}
+
+                                        {registerError && <Form.Control.Feedback type='invalid' className='d-block' style={{marginTop: '1rem'}}>
+                                            Unknown error occured, which is most likely us, not you! Try again later.
                                         </Form.Control.Feedback>}
                                     </Form.Group>
 
