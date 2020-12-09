@@ -73,7 +73,7 @@ const { attemptLoginReduce, attemptLoginFailure, attemptRegisterFailureValidatio
 
 export const attemptLogin = (username: string, password: string): AppThunk => async dispatch => {
     try {
-        const response = await axios.post<User>('http://localhost:8080/api/login', { username, password });
+        const response = await axios.post<User>(`${process.env.REACT_APP_API_URL}api/login`, { username, password });
 
         dispatch(attemptLoginReduce(response.data));
         localStorage.setItem('authUser', JSON.stringify(response.data));
@@ -85,7 +85,7 @@ export const attemptLogin = (username: string, password: string): AppThunk => as
 
 export const attemptRegister = (username: string, email: string, password: string): AppThunk => async dispatch => {
     try {
-        await axios.post('http://localhost:8080/api/register', { username, email, password });
+        await axios.post(`${process.env.REACT_APP_API_URL}api/register`, { username, email, password });
 
         dispatch(attemptRegisterReduce());
     } catch (err) {

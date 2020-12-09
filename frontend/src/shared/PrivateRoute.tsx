@@ -5,11 +5,6 @@ interface AdditionalPropType {
   type: string;
 }
 
-interface LoggedInObject {
-  status: boolean;
-  fromAuth: boolean;
-}
-
 interface Props {
   component: React.ComponentType<any>;
   additionalProps?: AdditionalPropType;
@@ -21,4 +16,4 @@ const PrivateRoute: React.FC<Props> = ({ component: Component, ...rest }) => (
   <Route {...rest} render={props => <Component {...props} {...rest.additionalProps} />} />
 );
 
-export default PrivateRoute; 
+export default PrivateRoute;
