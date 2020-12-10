@@ -22,15 +22,21 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->post('register', 'AuthController@register');
 
     $router->get('post', 'PostController@index');
-    $router->post('post/create', 'PostController@store');
     $router->get('post/{id}', 'PostController@get');
-    $router->delete('post/delete/{id}', 'PostController@delete');
 
-    $router->post('comment/create', 'CommentController@store');
+    $router->group(
+        ['middleware' => 'auth:api'], 
+        function() use ($router) {
+            $router->post('post/create', 'PostController@store');
+            $router->delete('post/delete/{id}', 'PostController@delete');
 
-    $router->post('comment_upvote', 'CommentsUpvotesController@store');
-    $router->delete('comment_remove_upvote', 'CommentsUpvotesController@delete');
+            $router->post('comment/create', 'CommentController@store');
 
-    $router->post('post_upvote', 'PostsUpvotesController@store');
-    $router->delete('post_remove_upvote', 'PostsUpvotesController@delete');
+            $router->post('comment_upvote', 'CommentsUpvotesController@store');
+            $router->delete('comment_remove_upvote', 'CommentsUpvotesController@delete');
+
+            $router->post('post_upvote', 'PostsUpvotesController@store');
+            $router->delete('post_remove_upvote', 'PostsUpvotesController@delete');
+        }
+    );
 });
