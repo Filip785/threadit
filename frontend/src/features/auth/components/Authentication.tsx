@@ -25,10 +25,6 @@ export default function Authentication() {
     const registered = useSelector(selectRegistered);
 
     useEffect(() => {
-        if(authUser) {
-            history.push('/');
-        }
-
         if(registered) {
             dispatch(attemptRegisterReduce());
         }

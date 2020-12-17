@@ -1,24 +1,45 @@
 import React, { useEffect } from 'react';
 import { Button, Card } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { selectAuthUser, signOutReduce } from '../../auth/authSlice';
-import { getFrontPagePosts, selectPage, selectPosts } from '../frontPageSlice';
+import { getFrontPagePosts, selectPage, selectPosts, setPage } from '../frontPageSlice';
 
-export function FrontPage() {
+export default function FrontPage() {
     const dispatch = useDispatch();
 
     const authUser = useSelector(selectAuthUser);
     const posts = useSelector(selectPosts);
     const page = useSelector(selectPage);
+    const params: { page: string } = useParams();
 
     useEffect(() => {
-        dispatch(getFrontPagePosts(page));
-    }, [dispatch]);
+        const pageParam = Number(params.page);
+
+        console.log('fired!');
+
+        if(pageParam !== page) {
+            dispatch(setPage(pageParam));
+        } else {
+            dispatch(getFrontPagePosts(page));
+        }
+    }, [dispatch, page, params.page]);
 
     return (
         <div>
             <h1>Frontpage!</h1>
+
+            {!authUser && (
+                <>
+                    <div>
+                        <Link to='/auth'>Login</Link>
+                    </div>
+
+                    <div>
+                        <Link to='/register'>Register</Link>
+                    </div>
+                </>
+            )}
 
             {posts.map((post, index) => {
                 return (
@@ -33,22 +54,16 @@ export function FrontPage() {
                 );
             })}
 
+            <div className="nav-links">
+                {page !== 1 && <Link to={`/p/${page-1}`}>back</Link>}
+                {posts.length === 20 && <Link to={`/p/${(page+1)}`}>next</Link>}
+            </div>
+
 
             {authUser && <Button type='button' variant='danger' onClick={() => {
                 localStorage.removeItem('authUser');
                 dispatch(signOutReduce());
             }}>Logout</Button>}
-            {!authUser && (
-                <>
-                    <div>
-                        <Link to='/auth'>Login</Link>
-                    </div>
-
-                    <div>
-                        <Link to='/register'>Register</Link>
-                    </div>
-                </>
-            )}
         </div>
     );
 }

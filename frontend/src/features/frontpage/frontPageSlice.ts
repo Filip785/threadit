@@ -19,11 +19,15 @@ export const frontPageSlice = createSlice({
     reducers: {
         getFrontPagePostsReduce(state, action: PayloadAction<Post[]>) {
             state.posts = action.payload;
+        },
+        setPage(state, action: PayloadAction<number>) {
+            state.page = action.payload;
         }
     },
 });
 
 const { getFrontPagePostsReduce } = frontPageSlice.actions;
+export const { setPage } = frontPageSlice.actions;
 
 export const getFrontPagePosts = (page: number): AppThunk => async dispatch => {
     try {

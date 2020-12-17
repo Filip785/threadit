@@ -10,7 +10,7 @@ interface Props {
 
 const PublicRoute: React.FC<Props> = ({ component: Component, ...rest }) => {
   const { authUser } = rest;
-  let to: string = '/';
+  let to: string = '/p/1';
 
   return (
     <Route {...rest} render={props => authUser ? (<Redirect to={to} />) : ( <Component {...props} /> )} />
