@@ -7,7 +7,7 @@ import PublicRoute from './shared/PublicRoute';
 import Authentication from './features/auth/components/Authentication';
 import Registration from './features/auth/components/Registration';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { FrontPage } from './features/frontpage/FrontPage';
+import { FrontPage } from './features/frontpage/components/FrontPage';
 import { selectAuthUser } from './features/auth/authSlice';
 import { useSelector } from 'react-redux';
 

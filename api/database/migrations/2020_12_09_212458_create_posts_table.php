@@ -18,6 +18,7 @@ class CreatePostsTable extends Migration
             $table->string('post_title');
             $table->text('description');
             $table->foreignId('user_id')->constrained();
+            $table->integer('comment_count')->default(0);
             $table->timestamps();
         });
     }

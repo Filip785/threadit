@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\CommentsUpvotes;
-use App\Models\PostsUpvotes;
 use Illuminate\Http\Request;
 
+use App\Models\CommentsUpvotes;
+use App\Models\PostsUpvotes;
 use App\Models\Post;
 use App\Models\Comment;
 
 class PostController extends Controller
 {
     public function index() {
-        return Post::all();
+        return Post::with('user')->get();
     }
 
     public function store(Request $request) {

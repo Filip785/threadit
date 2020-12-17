@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
+use Carbon\Carbon;
+
 use App\Models\Comment;
 use App\Models\CommentsUpvotes;
 use App\Models\CommentsUsers;
-use Illuminate\Http\Request;
-use Carbon\Carbon;
+use App\Models\Post;
+use Illuminate\Support\Facades\DB;
 
 class CommentController extends Controller
 {
@@ -80,6 +83,10 @@ class CommentController extends Controller
         CommentsUpvotes::create([
             'user_id' => $userId,
             'pattern' => $postTreeId
+        ]);
+
+        Post::where('id', $postId)->update([
+            'comment_count' => DB::raw('comment_count+1')
         ]);
 
         return response()->json(['success' => 'Comment created!'], 200);
