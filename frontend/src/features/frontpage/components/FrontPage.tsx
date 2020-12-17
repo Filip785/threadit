@@ -3,16 +3,17 @@ import { Button, Card } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { selectAuthUser, signOutReduce } from '../../auth/authSlice';
-import { getFrontPagePosts, selectPosts } from '../frontPageSlice';
+import { getFrontPagePosts, selectPage, selectPosts } from '../frontPageSlice';
 
 export function FrontPage() {
     const dispatch = useDispatch();
 
     const authUser = useSelector(selectAuthUser);
     const posts = useSelector(selectPosts);
+    const page = useSelector(selectPage);
 
     useEffect(() => {
-        dispatch(getFrontPagePosts());
+        dispatch(getFrontPagePosts(page));
     }, [dispatch]);
 
     return (

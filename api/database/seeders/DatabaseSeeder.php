@@ -2,10 +2,13 @@
 
 namespace Database\Seeders;
 
-use Carbon\Carbon;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Faker;
+
+use App\Models\User;
+use App\Models\Post;
 
 class DatabaseSeeder extends Seeder
 {
@@ -16,22 +19,28 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $now = Carbon::now();
+        $faker = Faker\Factory::create();
 
-        $userId = DB::table('users')->insertGetId([
+        User::create([
             'username' => 'sudox785',
             'email' => 'fdjuricic98@gmail.com',
             'password' => Hash::make('ub2015!!'),
-            'is_admin' => 1,
-            'created_at' => $now,
-            'updated_at' => $now,
+            'is_admin' => 1
         ]);
 
-        DB::table('comments_users')->insert([
-            'user_id' => $userId,
-            'all_comments' => '[]',
-            'created_at' => $now,
-            'updated_at' => $now
+        User::create([
+            'username' => 'filip785',
+            'email' => 'fdjuricic98@outlook.com',
+            'password' => Hash::make('ub2015!!'),
+            'is_admin' => 0
         ]);
+
+        for($i = 0; $i < 50; $i++) {
+            Post::create([
+                'post_title' => $faker->sentence(5),
+                'description' => $faker->sentence(30),
+                'user_id' => rand(1, 2)
+            ]);
+        }
     }
 }

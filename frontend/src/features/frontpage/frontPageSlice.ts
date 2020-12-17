@@ -5,10 +5,12 @@ import { Post } from '../../models/Post';
 
 interface FrontPageState {
     posts: Post[],
+    page: number
 }
 
 const initialState: FrontPageState = {
-    posts: []
+    posts: [],
+    page: 1
 };
 
 export const frontPageSlice = createSlice({
@@ -23,9 +25,9 @@ export const frontPageSlice = createSlice({
 
 const { getFrontPagePostsReduce } = frontPageSlice.actions;
 
-export const getFrontPagePosts = (): AppThunk => async dispatch => {
+export const getFrontPagePosts = (page: number): AppThunk => async dispatch => {
     try {
-        const response = await axios.get<Post[]>(`${process.env.REACT_APP_API_URL}api/post`);
+        const response = await axios.get<Post[]>(`${process.env.REACT_APP_API_URL}api/post/all`, { params: { page } });
     
         dispatch(getFrontPagePostsReduce(response.data));
     } catch (err) {
@@ -34,6 +36,7 @@ export const getFrontPagePosts = (): AppThunk => async dispatch => {
 };
 
 export const selectPosts = (state: RootState) => state.frontPage.posts;
+export const selectPage = (state: RootState) => state.frontPage.page;
 
 export default frontPageSlice.reducer;
 

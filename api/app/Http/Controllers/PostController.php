@@ -11,8 +11,10 @@ use App\Models\Comment;
 
 class PostController extends Controller
 {
-    public function index() {
-        return Post::with('user')->get();
+    public function index(Request $request) {
+        $page = $request->page - 1;
+
+        return Post::with('user')->orderBy('id', 'desc')->skip($page * 20)->take(20)->get();
     }
 
     public function store(Request $request) {
@@ -30,11 +32,6 @@ class PostController extends Controller
             'post_title' => $request->get('post_title'),
             'description' => $request->get('description'),
             'user_id' => $userId
-        ]);
-
-        PostsUpvotes::create([
-            'user_id' => $userId,
-            'post_id' => $post->id
         ]);
 
         return response()->json(['success' => 'Post created!'], 200);

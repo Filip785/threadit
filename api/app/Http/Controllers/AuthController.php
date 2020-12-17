@@ -12,15 +12,7 @@ use App\Models\User;
 use App\Models\CommentsUsers;
 
 class AuthController extends Controller {
-    public function __construct() {
-        //$this->middleware('auth:api', ['except' => ['login', 'register']]);
-        //$this->middleware('web');
-    }
-
-    public function login(Request $request)
-    {
-        //dd($credentials);
-
+    public function login(Request $request) {
         $credentials = $this->validate($request, [
             'username' => 'required',
             'password' => 'required',
@@ -63,11 +55,6 @@ class AuthController extends Controller {
             'username' => $request->get('username'),
             'email' => $request->get('email'),
             'password' => Hash::make($request->get('password')),
-        ]);
-
-        CommentsUsers::create([
-            'user_id' => $user->id,
-            'all_comments' => '[]',
         ]);
 
         return response()->json(['status' => 200]);

@@ -6,6 +6,12 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
+use App\Models\User;
+use App\Observers\UserObserver;
+
+use App\Models\Post;
+use App\Observers\PostObserver;
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -22,5 +28,8 @@ class AppServiceProvider extends ServiceProvider
         DB::listen(function ($query) {
             Log::emergency($query->sql);
         });
+
+        User::observe(UserObserver::class);
+        Post::observe(PostObserver::class);
     }
 }

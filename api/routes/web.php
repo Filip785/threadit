@@ -21,7 +21,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->post('login', 'AuthController@login');
     $router->post('register', 'AuthController@register');
 
-    $router->get('post', 'PostController@index');
+    $router->get('post/all', 'PostController@index');
     $router->get('post/{id}', 'PostController@get');
 
     $router->group(
