@@ -4,8 +4,7 @@ import { Button, Container, Row, Col, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { string, object } from 'yup';
-import history from '../../../shared/history';
-import { attemptLogin, attemptLoginFailureEnd, attemptRegisterReduce, selectAuthUser, selectLoginError, selectRegistered } from '../authSlice';
+import { attemptLogin, attemptLoginFailureEnd, attemptRegisterReduce, selectLoginError, selectRegistered } from '../authSlice';
 
 interface IAuthenticateForm {
     username: string;
@@ -20,7 +19,6 @@ const schema = object({
 export default function Authentication() {
     const dispatch = useDispatch();
 
-    const authUser = useSelector(selectAuthUser);
     const loginError = useSelector(selectLoginError);
     const registered = useSelector(selectRegistered);
 

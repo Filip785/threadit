@@ -7,3 +7,23 @@ html, body, #root {
   justify-content: space-between;
   margin: 10px 0;
 }
+
+.post-header-holder {
+  display: flex;
+}
+
+.arrow-holder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-right: 20px;
+}
+
+.arrow-holder svg {
+  cursor: pointer;
+}
+
+.upvoted {
+  font-weight: bolder;
+  font-size: 22px;
+}

@@ -41,4 +41,10 @@ class Post extends Model
     public function getVoteCountAttribute() {
         return PostsUpvotes::where(['post_id' => $this->id])->count();
     }
+
+    public function didUpvote($userId, $postId) {
+        $upvote = PostsUpvotes::where(['user_id' => $userId, 'post_id' => $postId])->first();
+
+        return ($upvote === null) ? 0 : 1;
+    }
 }

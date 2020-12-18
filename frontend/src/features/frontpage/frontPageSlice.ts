@@ -20,20 +20,43 @@ export const frontPageSlice = createSlice({
         getFrontPagePostsReduce(state, action: PayloadAction<Post[]>) {
             state.posts = action.payload;
         },
+        upvotePostReduce(state, action: PayloadAction<number>) {
+            // to display on frontend!
+        },
         setPage(state, action: PayloadAction<number>) {
             state.page = action.payload;
         }
     },
 });
 
-const { getFrontPagePostsReduce } = frontPageSlice.actions;
+const { getFrontPagePostsReduce, upvotePostReduce } = frontPageSlice.actions;
 export const { setPage } = frontPageSlice.actions;
 
-export const getFrontPagePosts = (page: number): AppThunk => async dispatch => {
+export const getFrontPagePosts = (page: number, apiToken: string): AppThunk => async dispatch => {
+    const headers = apiToken ? { Authorization: `Bearer ${apiToken}` } : null;
+    
     try {
-        const response = await axios.get<Post[]>(`${process.env.REACT_APP_API_URL}api/post/all`, { params: { page } });
+        const response = await axios.get<Post[]>(`${process.env.REACT_APP_API_URL}api/post/all`, { params: { page }, headers });
     
         dispatch(getFrontPagePostsReduce(response.data));
+    } catch (err) {
+        console.log('Get Front Page Posts error: ', err);
+    }
+};
+
+export const upvotePost = (userId: number, postId: number, apiToken: string): AppThunk => async dispatch => {
+    const headers = apiToken ? { Authorization: `Bearer ${apiToken}` } : null;
+
+    console.log(headers);
+
+    try {
+        const response = await axios.post<number>(`${process.env.REACT_APP_API_URL}api/post_upvote`, { userId, postId }, {
+            headers: {
+                Authorization: `Bearer ${apiToken}`
+            }
+        });
+    
+        dispatch(upvotePostReduce(response.data));
     } catch (err) {
         console.log('Get Front Page Posts error: ', err);
     }

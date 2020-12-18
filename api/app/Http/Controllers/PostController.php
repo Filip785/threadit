@@ -14,7 +14,17 @@ class PostController extends Controller
     public function index(Request $request) {
         $page = $request->page - 1;
 
-        return Post::with('user')->orderBy('id', 'desc')->skip($page * 20)->take(20)->get();
+        $posts = Post::with('user')->orderBy('id', 'desc')->skip($page * 20)->take(20)->get();
+
+        $user = auth()->user();
+
+        if($user) {
+            foreach($posts as $post) {
+                $post['did_upvote'] = $post->didUpvote($user->id, $post['id']);
+            }
+        }
+
+        return $posts;
     }
 
     public function store(Request $request) {

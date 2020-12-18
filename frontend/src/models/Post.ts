@@ -7,5 +7,6 @@ export interface Post {
     created_at: string;
     voteCount: number;
     comment_count: number;
+    did_upvote?: number;
     user: User;
 }

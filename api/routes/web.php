@@ -21,8 +21,14 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->post('login', 'AuthController@login');
     $router->post('register', 'AuthController@register');
 
-    $router->get('post/all', 'PostController@index');
     $router->get('post/{id}', 'PostController@get');
+
+    $router->group(
+        ['middleware' => 'neutral'],
+        function() use ($router) {
+            $router->get('post/all', 'PostController@index');
+        }
+    );
 
     $router->group(
         ['middleware' => 'auth:api'], 
