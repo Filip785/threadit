@@ -21,16 +21,34 @@ export const frontPageSlice = createSlice({
             state.posts = action.payload;
         },
         upvotePostReduce(state, action: PayloadAction<number>) {
-            // to display on frontend!
+            state.posts = state.posts.map(item => {
+                if(item.id !== action.payload) {
+                    return item;
+                }
+
+                if(item.did_upvote === 0) {
+                    item.did_upvote = 1;
+                    item.voteCount = item.voteCount + 1;
+                } else {
+                    item.did_upvote = 0;
+                    item.voteCount = item.voteCount - 1;
+                }
+
+                return item;
+            });
         },
-        setPage(state, action: PayloadAction<number>) {
+        setPageReduce(state, action: PayloadAction<number>) {
             state.page = action.payload;
-        }
+        },
+        resetStateReduce(state) {
+            state.posts = [];
+            state.page = 1;
+        },
     },
 });
 
-const { getFrontPagePostsReduce, upvotePostReduce } = frontPageSlice.actions;
-export const { setPage } = frontPageSlice.actions;
+const { getFrontPagePostsReduce } = frontPageSlice.actions;
+export const { setPageReduce, resetStateReduce, upvotePostReduce } = frontPageSlice.actions;
 
 export const getFrontPagePosts = (page: number, apiToken: string): AppThunk => async dispatch => {
     const headers = apiToken ? { Authorization: `Bearer ${apiToken}` } : null;
@@ -44,19 +62,13 @@ export const getFrontPagePosts = (page: number, apiToken: string): AppThunk => a
     }
 };
 
-export const upvotePost = (userId: number, postId: number, apiToken: string): AppThunk => async dispatch => {
-    const headers = apiToken ? { Authorization: `Bearer ${apiToken}` } : null;
-
-    console.log(headers);
-
+export const upvotePost = (userId: number, postId: number, apiToken: string): AppThunk => async _dispatch => {
     try {
-        const response = await axios.post<number>(`${process.env.REACT_APP_API_URL}api/post_upvote`, { userId, postId }, {
+        await axios.post<number>(`${process.env.REACT_APP_API_URL}api/post_upvote`, { userId, postId }, {
             headers: {
                 Authorization: `Bearer ${apiToken}`
             }
         });
-    
-        dispatch(upvotePostReduce(response.data));
     } catch (err) {
         console.log('Get Front Page Posts error: ', err);
     }

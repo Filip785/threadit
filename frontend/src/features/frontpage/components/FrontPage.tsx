@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
 import { Button, Card } from 'react-bootstrap';
-import { ArrowUp } from 'react-bootstrap-icons';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 import { selectAuthUser, signOutReduce } from '../../auth/authSlice';
-import { getFrontPagePosts, selectPage, selectPosts, setPage, upvotePost } from '../frontPageSlice';
+import { getFrontPagePosts, selectPage, selectPosts, setPageReduce } from '../frontPageSlice';
+import Upvote from './Upvote';
 
 export default function FrontPage() {
     const dispatch = useDispatch();
@@ -18,7 +18,7 @@ export default function FrontPage() {
         const pageParam = Number(params.page);
 
         if(pageParam !== page) {
-            dispatch(setPage(pageParam));
+            dispatch(setPageReduce(pageParam));
         } else {
             dispatch(getFrontPagePosts(page, authUser?.api_token!));
         }
@@ -46,10 +46,7 @@ export default function FrontPage() {
 
                         <Card.Body>
                             <div className="post-header-holder">
-                                {authUser && <div className="arrow-holder">
-                                    <ArrowUp onClick={() => dispatch(upvotePost(authUser.id!, post.id!, authUser.api_token!))} fill='#ff4500' />
-                                    <p className={post.did_upvote ? 'upvoted' : ''}>{post.voteCount}</p>
-                                </div>}
+                                <Upvote post={post} />
                                 <div className="title-holder">
                                     <Card.Title>{post.post_title}</Card.Title>
                                     <Card.Subtitle className="mb-2 text-muted">Created by <Link to={`/u/${post.user.username}`}>/u/{post.user.username}</Link> at {new Date(post.created_at).toLocaleDateString('en-GB')}</Card.Subtitle>
