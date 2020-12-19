@@ -25,8 +25,9 @@ export default function FrontPage() {
     }, [dispatch, page, params.page, authUser?.api_token]);
 
     return (
-        <div>
+        <>
             <h1>Frontpage!</h1>
+            <h2>Welcome, <Link to={`/u/${authUser!.username}`}>u/{authUser!.username}</Link></h2>
 
             {!authUser && (
                 <>
@@ -40,6 +41,8 @@ export default function FrontPage() {
                 </>
             )}
 
+            {authUser && <Link to='/create_post' className='btn btn-primary'>Create post</Link>}
+
             {posts.map((post, index) => {
                 return (
                     <Card key={index}>
@@ -48,12 +51,12 @@ export default function FrontPage() {
                             <div className="post-header-holder">
                                 <Upvote post={post} />
                                 <div className="title-holder">
-                                    <Card.Title>{post.post_title}</Card.Title>
+                                    <Card.Title><a href={post.description} target='_blank' rel='noopener'>{post.post_title}</a></Card.Title>
                                     <Card.Subtitle className="mb-2 text-muted">Created by <Link to={`/u/${post.user.username}`}>/u/{post.user.username}</Link> at {new Date(post.created_at).toLocaleDateString('en-GB')}</Card.Subtitle>
                                 </div>
                             </div>
-                            <Card.Link href="#">Comments ({post.comment_count})</Card.Link>
-                            <Card.Link href="#">Report</Card.Link>
+                            <Link to="/p/2">Comments ({post.comment_count})</Link>
+                            <Link to="/p/3" style={{ marginLeft: 10 }}>Report</Link>
                         </Card.Body>
                     </Card>
                 );
@@ -69,6 +72,6 @@ export default function FrontPage() {
                 localStorage.removeItem('authUser');
                 dispatch(signOutReduce());
             }}>Logout</Button>}
-        </div>
+        </>
     );
 }

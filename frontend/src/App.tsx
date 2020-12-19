@@ -11,26 +11,33 @@ import FrontPage from './features/frontpage/components/FrontPage';
 import { selectAuthUser } from './features/auth/authSlice';
 import { useSelector } from 'react-redux';
 import ScrollToTop from './shared/ScrollToTop';
+import CreatePost from './features/create-post/components/CreatePost';
+import { Container } from 'react-bootstrap';
 
 function App() {
   const authUser = useSelector(selectAuthUser);
 
   return (
-    <Router history={history}>
-      <Switch>
-        <Route path='/auth'>
-          <PublicRoute authUser={authUser} component={Authentication} path='/auth' />
-        </Route>
-        <Route path='/register'>
-          <PublicRoute authUser={authUser} component={Registration} path='/register' />
-        </Route>
-        <Route path="/p/:page">
-          <ScrollToTop />
-          <PrivateRoute path='/p/:page' exact component={FrontPage} />
-        </Route>
-        <Route component={() => <h1>404!</h1>} />
-      </Switch>
-    </Router>
+    <Container className="h-100">
+      <Router history={history}>
+        <Switch>
+          <Route path='/auth'>
+            <PublicRoute authUser={authUser} component={Authentication} path='/auth' />
+          </Route>
+          <Route path='/register'>
+            <PublicRoute authUser={authUser} component={Registration} path='/register' />
+          </Route>
+          <Route path="/p/:page">
+            <ScrollToTop />
+            <PrivateRoute path='/p/:page' exact component={FrontPage} />
+          </Route>
+          <Route path="/create_post">
+            <PrivateRoute path='/create_post' exact component={CreatePost} />
+          </Route>
+          <Route component={() => <h1>404!</h1>} />
+        </Switch>
+      </Router>
+    </Container>
   );
 }
 

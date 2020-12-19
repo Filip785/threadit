@@ -38,7 +38,7 @@ class DatabaseSeeder extends Seeder
         for($i = 0; $i < 50; $i++) {
             Post::create([
                 'post_title' => $faker->sentence(5),
-                'description' => $faker->sentence(30),
+                'description' => $faker->url(),
                 'user_id' => rand(1, 2)
             ]);
         }
