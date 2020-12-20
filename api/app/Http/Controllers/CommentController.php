@@ -42,14 +42,13 @@ class CommentController extends Controller
 
             $commentParent = Comment::find($ids[0]);
             $commentParentReplies = json_decode($commentParent->replies, true);
-            $commentParentRepliesCount = count($commentParentReplies);
             $now = Carbon::now();
 
             // perhaps have another table that stores not normalized references to a specific user comments?
 
             if($replyCount === 1) {
-                $addId = $commentParentRepliesCount + 1;
-                $postTreeId = "$postTreeId||$addId";
+                $commentParentRepliesCount = count($commentParentReplies);
+                $postTreeId = "$postTreeId||$commentParentRepliesCount";
                 $commentParentReplies[$addId] = $this->getInsertObject($request, $postTreeId, $now, $user);
             } else {
                 unset($ids[0]);
@@ -61,7 +60,7 @@ class CommentController extends Controller
                     $refToUpdate = &$refToUpdate[$id]['replies'];  
                 }
 
-                $replyNextIndex = count($refToUpdate) + 1;
+                $replyNextIndex = count($refToUpdate);
                 $refToUpdate[$replyNextIndex] = $this->getInsertObject($request, $postTreeId, $now, $user);
             }
 
