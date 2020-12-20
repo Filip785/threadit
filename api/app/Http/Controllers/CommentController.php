@@ -24,12 +24,20 @@ class CommentController extends Controller
             'content.required' => 'Please enter your comment.'
         ]);
 
-        $commentReply = $request->input('reply');
         $postTreeId = null;
 
-        if($commentReply) {
-            $postTreeId = $commentReply['longId'];
-            $ids = explode('|', $commentReply['longId']);
+        if($request->input('reply')) {
+            $postTreeId = $request->input('reply');
+            $ids = [];
+            $user = auth()->user();
+            $user = ['id' => $user->id, 'username' => $user->username];
+            
+            if(strpos($postTreeId, '||') !== false) {
+                $ids = explode('||', $postTreeId);
+            } else {
+                $ids = explode('|', $postTreeId);
+            }
+            
             $replyCount = count($ids);
 
             $commentParent = Comment::find($ids[0]);
@@ -42,18 +50,19 @@ class CommentController extends Controller
             if($replyCount === 1) {
                 $addId = $commentParentRepliesCount + 1;
                 $postTreeId = "$postTreeId||$addId";
-                $commentParentReplies[$addId] = $this->getInsertObject($request, $postTreeId, $now);
+                $commentParentReplies[$addId] = $this->getInsertObject($request, $postTreeId, $now, $user);
             } else {
                 unset($ids[0]);
 
+                $commentParentReplies = $this->decode_recursive_replies($commentParentReplies);
                 $refToUpdate = &$commentParentReplies;
 
                 foreach($ids as $id) {
-                    $refToUpdate = &$refToUpdate[$id]['replies'];
+                    $refToUpdate = &$refToUpdate[$id]['replies'];  
                 }
 
                 $replyNextIndex = count($refToUpdate) + 1;
-                $refToUpdate[$replyNextIndex] = $this->getInsertObject($request, $postTreeId, $now);
+                $refToUpdate[$replyNextIndex] = $this->getInsertObject($request, $postTreeId, $now, $user);
             }
 
             $commentParent->replies = json_encode($commentParentReplies);
@@ -104,7 +113,7 @@ class CommentController extends Controller
         //
     }
 
-    protected function getInsertObject(Request $request, $pattern = null, $now = null) {
+    protected function getInsertObject(Request $request, $pattern = null, $now = null, $user = null) {
         $insertObject = [
             'content' => $request->get('content'),
             'user_id' => $request->get('user_id'),
@@ -114,10 +123,28 @@ class CommentController extends Controller
 
         if($now) {
             $insertObject['pattern'] = $pattern;
+            $insertObject['user'] = $user;
             $insertObject['created_at'] = $now;
             $insertObject['updated_at'] = $now;
         }
 
         return $insertObject;
+    }
+
+    protected function decode_recursive_replies($commentParentReplies, bool $with_decode = false) {
+        if($with_decode) {
+            $commentParentReplies = json_decode($commentParentReplies, true);
+        }
+
+        foreach($commentParentReplies as &$parentReply) {
+            if($parentReply['replies']) {
+                // if there are multiple replies dont decode immediately
+                $dec = is_array($parentReply['replies']) ? false : true;
+
+                $parentReply['replies'] = $this->decode_recursive_replies($parentReply['replies'], $dec);
+            }
+        }
+
+        return $commentParentReplies;
     }
 }

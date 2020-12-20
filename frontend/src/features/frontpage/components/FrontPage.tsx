@@ -27,7 +27,8 @@ export default function FrontPage() {
     return (
         <>
             <h1>Frontpage!</h1>
-            <h2>Welcome, <Link to={`/u/${authUser!.username}`}>u/{authUser!.username}</Link></h2>
+
+            {authUser && <h2>Welcome, <Link to={`/u/${authUser!.username}`}>u/{authUser!.username}</Link></h2>}
 
             {!authUser && (
                 <>
@@ -51,11 +52,11 @@ export default function FrontPage() {
                             <div className="post-header-holder">
                                 <Upvote post={post} />
                                 <div className="title-holder">
-                                    <Card.Title><a href={post.description} target='_blank' rel='noopener'>{post.post_title}</a></Card.Title>
+                                    <Card.Title><a href={post.description} target='_blank' rel='noopener noreferrer'>{post.post_title}</a></Card.Title>
                                     <Card.Subtitle className="mb-2 text-muted">Created by <Link to={`/u/${post.user.username}`}>/u/{post.user.username}</Link> at {new Date(post.created_at).toLocaleDateString('en-GB')}</Card.Subtitle>
                                 </div>
                             </div>
-                            <Link to="/p/2">Comments ({post.comment_count})</Link>
+                            <Link to={`/t/${post.id!}`}>Comments ({post.comment_count})</Link>
                             <Link to="/p/3" style={{ marginLeft: 10 }}>Report</Link>
                         </Card.Body>
                     </Card>

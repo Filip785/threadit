@@ -31,7 +31,7 @@ export default function CreatePost() {
             history.push('/p/1');
             dispatch(resetStateReduce());
         }
-    }, [authUser, postCreated]);
+    }, [dispatch, authUser, postCreated]);
 
     return (
         <Row className="h-100">

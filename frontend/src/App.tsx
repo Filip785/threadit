@@ -13,6 +13,7 @@ import { useSelector } from 'react-redux';
 import ScrollToTop from './shared/ScrollToTop';
 import CreatePost from './features/create-post/components/CreatePost';
 import { Container } from 'react-bootstrap';
+import Thread from './features/thread/components/Thread';
 
 function App() {
   const authUser = useSelector(selectAuthUser);
@@ -30,6 +31,9 @@ function App() {
           <Route path="/p/:page">
             <ScrollToTop />
             <PrivateRoute path='/p/:page' exact component={FrontPage} />
+          </Route>
+          <Route path="/t/:thread">
+            <PrivateRoute path='/t/:thread' exact component={Thread} />
           </Route>
           <Route path="/create_post">
             <PrivateRoute path='/create_post' exact component={CreatePost} />
