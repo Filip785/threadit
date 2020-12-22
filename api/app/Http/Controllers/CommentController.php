@@ -25,22 +25,22 @@ class CommentController extends Controller
         ]);
 
         $postTreeId = null;
+        $commentReturn = null;
 
-        if($request->input('reply')) {
-            $postTreeId = $request->input('reply');
-            $ids = [];
-            $user = auth()->user();
-            $user = ['id' => $user->id, 'username' => $user->username];
+        $reply = $request->input('reply');
+        $commentParentReplies = null;
+
+        $user = auth()->user();
+        $userObject = ['id' => $user->id, 'username' => $user->username];
+
+        if($reply) {
+            $postTreeId = $reply;
             
-            if(strpos($postTreeId, '||') !== false) {
-                $ids = explode('||', $postTreeId);
-            } else {
-                $ids = explode('|', $postTreeId);
-            }
+            $ids = explode('||', $postTreeId);
             
             $replyCount = count($ids);
 
-            $commentParent = Comment::find($ids[0]);
+            $commentParent = Comment::with(['user:id,username'])->find($ids[0]);
             $commentParentReplies = json_decode($commentParent->replies, true);
             $now = Carbon::now();
 
@@ -49,32 +49,41 @@ class CommentController extends Controller
             if($replyCount === 1) {
                 $commentParentRepliesCount = count($commentParentReplies);
                 $postTreeId = "$postTreeId||$commentParentRepliesCount";
-                $commentParentReplies[$addId] = $this->getInsertObject($request, $postTreeId, $now, $user);
+                $commentParentReplies[$commentParentRepliesCount] = $this->getInsertObject($request, $postTreeId, $now, $userObject);
             } else {
                 unset($ids[0]);
 
                 $commentParentReplies = $this->decode_recursive_replies($commentParentReplies);
                 $refToUpdate = &$commentParentReplies;
-
+                
                 foreach($ids as $id) {
                     $refToUpdate = &$refToUpdate[$id]['replies'];  
                 }
 
                 $replyNextIndex = count($refToUpdate);
-                $refToUpdate[$replyNextIndex] = $this->getInsertObject($request, $postTreeId, $now, $user);
-            }
 
+                $postTreeId = "$postTreeId||$replyNextIndex";
+                $refToUpdate[$replyNextIndex] = $this->getInsertObject($request, $postTreeId, $now, $userObject);
+            }
+            
             $commentParent->replies = json_encode($commentParentReplies);
             $commentParent->update();
+
+            $commentReturn = $commentParent->toArray();
+            $commentReturn['voteCount'] = Comment::getVoteCount((string) $commentReturn['id']);
         } else {
             // comment is reply directly to the post (treated like a main comment or a parent comment)
             $comment = Comment::create($this->getInsertObject($request));
 
             $postTreeId = strval($comment->id);
+
+            $commentReturn = $comment->toArray();
+            $commentReturn['user'] = $userObject;
+            $commentReturn['replies'] = [];
+            $commentReturn['voteCount'] = 1;
         }
 
-        $userId = $request->get('user_id');
-        $commentsUserItem = CommentsUsers::select('id', 'all_comments')->where(['user_id' => $userId])->first();
+        $commentsUserItem = CommentsUsers::select('id', 'all_comments')->where(['user_id' => $user->id])->first();
         $postId = $request->get('post_id');
 
         $allCommentsDecoded = json_decode($commentsUserItem->all_comments, true);
@@ -89,15 +98,19 @@ class CommentController extends Controller
 
         //add initial upvote from the user that posted comment
         CommentsUpvotes::create([
-            'user_id' => $userId,
+            'user_id' => $user->id,
             'pattern' => $postTreeId
         ]);
+
+        if($reply) {
+            $commentReturn['replies'] = Comment::comments_replies_transform($commentParentReplies);
+        }
 
         Post::where('id', $postId)->update([
             'comment_count' => DB::raw('comment_count+1')
         ]);
 
-        return response()->json(['success' => 'Comment created!'], 200);
+        return response()->json(['comment' => $commentReturn], 200);
     }
 
     public function get(Comment $comment) {

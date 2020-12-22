@@ -56,7 +56,7 @@ class PostController extends Controller
         
         $comments = Comment::with(['user:id,username'])->where(['post_id' => $post->id])->get();
 
-        $comments = $this->comments_replies_transform($comments);
+        $comments = Comment::comments_replies_transform($comments);
 
         return [
             'post' => $post,
@@ -83,31 +83,5 @@ class PostController extends Controller
         }
 
         return response()->json(['success' => 'Deleted!'], 200);
-    }
-
-    protected function comments_replies_transform($commentsArray) {
-        foreach($commentsArray as &$item) {
-            if(!is_array($item['replies'])) {
-                $item['replies'] = json_decode($item['replies'], true);
-            }
-
-            $replyCount = count($item['replies']);
-
-            if(isset($item['pattern'])) {
-                $item['voteCount'] = $this->getVoteCount($item['pattern']);
-            } else {
-                $item['voteCount'] = $this->getVoteCount((string) $item->id);
-            }
-
-            if($replyCount > 0) {
-                $item['replies'] = $this->comments_replies_transform($item['replies']);
-            }
-        }
-
-        return $commentsArray;
-    }
-
-    protected function getVoteCount($pattern) {
-        return CommentsUpvotes::where(['pattern' => $pattern])->count();
     }
 }

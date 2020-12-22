@@ -28,6 +28,18 @@ html, body, #root {
   font-size: 22px;
 }
 
+.comment-info {
+  margin-bottom: 5px;
+}
+
+.comment {
+  padding: 25px 0;
+}
+
 .replies {
-  margin-left: 20px;
+  margin-left: 25px;
+}
+
+.reply-box {
+  padding-bottom: 0;
 }

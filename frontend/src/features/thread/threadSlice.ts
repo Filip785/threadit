@@ -9,6 +9,13 @@ interface ThreadState {
     comments: Comment[]
 }
 
+interface CreateCommentBodyParams {
+    content: string;
+    post_id: string;
+    user_id: number;
+    reply?: string;
+}
+
 const initialState: ThreadState = {
     mainPost: null,
     comments: []
@@ -25,11 +32,17 @@ export const threadSlice = createSlice({
     reducers: {
         setMainPostReduce(state, action: PayloadAction<SinglePost>) {
             state.mainPost = action.payload;
+        },
+        setCommentTreeReduce(state, action: PayloadAction<Comment>) {
+            state.mainPost!.comments = state.mainPost!.comments.map(comment => comment.id === action.payload.id ? action.payload : comment);
+        },
+        setCommentReduce(state, action: PayloadAction<Comment>) {
+            state.mainPost!.comments = [...state.mainPost!.comments, action.payload];
         }
     },
 });
 
-const { setMainPostReduce } = threadSlice.actions;
+const { setMainPostReduce, setCommentTreeReduce, setCommentReduce } = threadSlice.actions;
 
 export const fetchThread = (thread: string): AppThunk => async dispatch => {
     try {
@@ -38,6 +51,33 @@ export const fetchThread = (thread: string): AppThunk => async dispatch => {
         dispatch(setMainPostReduce(response.data));
     } catch (err) {
         console.log('Get Front Page Posts error: ', err);
+    }
+};
+
+export const createComment = (content: string, user_id: number, pattern: string | null, post_id: string, apiToken: string): AppThunk => async dispatch => {
+    let bodyParams: CreateCommentBodyParams = { content, user_id, post_id };
+    let addToTree = false;
+
+    if(pattern) {
+        addToTree = true;
+        bodyParams = { ...bodyParams, reply: pattern };
+    }
+
+    try {
+        const response = await axios.post<{comment: Comment}>(`${process.env.REACT_APP_API_URL}api/comment/create`, bodyParams, {
+            headers: {
+                Authorization: `Bearer ${apiToken}`
+            }
+        });
+        
+        if(addToTree)  {
+            dispatch(setCommentTreeReduce(response.data.comment));
+        } else {
+            dispatch(setCommentReduce(response.data.comment));
+        }
+    } catch (err) {
+        console.log('Create Comment error: ', err);
+        // to do: error handling
     }
 };
 
