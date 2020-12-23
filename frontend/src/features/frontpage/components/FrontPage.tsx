@@ -42,7 +42,13 @@ export default function FrontPage() {
                 </>
             )}
 
-            {authUser && <Link to='/create_post' className='btn btn-primary'>Create post</Link>}
+            <div className="action-buttons">
+                {authUser && <Link to='/create_post' className='btn btn-primary'>Create post</Link>}
+                {authUser && <Button type='button' className="logout" variant='danger' onClick={() => {
+                    localStorage.removeItem('authUser');
+                    dispatch(signOutReduce());
+                }}>Logout</Button>}
+            </div>
 
             {posts.map((post, index) => {
                 return (
@@ -56,7 +62,12 @@ export default function FrontPage() {
                                     <Card.Subtitle className="mb-2 text-muted">Created by <Link to={`/u/${post.user.username}`}>/u/{post.user.username}</Link> at {new Date(post.created_at).toLocaleDateString('en-GB')}</Card.Subtitle>
                                 </div>
                             </div>
-                            <Link to={`/t/${post.id!}`}>Comments ({post.comment_count})</Link>
+                            <Link to={{
+                                pathname: `/t/${post.id!}`,
+                                state: {
+                                    from: page
+                                }
+                            }}>Comments ({post.comment_count})</Link>
                             <Link to="/p/3" style={{ marginLeft: 10 }}>Report</Link>
                         </Card.Body>
                     </Card>
@@ -67,12 +78,6 @@ export default function FrontPage() {
                 {page !== 1 && <Link to={`/p/${page-1}`}>back</Link>}
                 {posts.length === 20 && <Link to={`/p/${(page+1)}`}>next</Link>}
             </div>
-
-
-            {authUser && <Button type='button' variant='danger' onClick={() => {
-                localStorage.removeItem('authUser');
-                dispatch(signOutReduce());
-            }}>Logout</Button>}
         </>
     );
 }

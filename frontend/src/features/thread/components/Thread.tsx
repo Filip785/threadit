@@ -7,20 +7,26 @@ import uniqid from 'uniqid';
 import CreateComment from './CreateComment';
 import { selectAuthUser } from '../../auth/authSlice';
 import { Link } from 'react-router-dom';
+import { History } from 'history';
 
-export default function Thread() {
+interface ThreadProps {
+    history?: History<{ from?: number }>
+}
+
+export default function Thread(props: ThreadProps) {
     const dispatch = useDispatch();
-    const params: { thread: string } = useParams();
+    const params: { thread: string, from: string } = useParams();
 
     const mainPost = useSelector(selectMainPost);
     const authUser = useSelector(selectAuthUser);
 
     useEffect(() => {
-        dispatch(fetchThread(params.thread, authUser!.api_token));
-    }, [dispatch, params.thread, authUser]);
+        dispatch(fetchThread(params.thread, authUser?.api_token));
+    }, [dispatch, params.thread, authUser?.api_token]);
 
     return (
         <div>
+            {<Link to={`/p/${props.history?.location.state?.from || '1'}`}>{props.history?.location.state?.from ? 'Go back' : 'Go to homepage'}</Link>}
             <h1>{mainPost?.post.post_title}</h1>
             <h3>{mainPost?.post.description}</h3>
 

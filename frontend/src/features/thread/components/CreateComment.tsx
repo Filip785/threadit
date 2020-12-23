@@ -16,7 +16,7 @@ interface ICommentForm {
 }
 
 const schema = object({
-    content: string().required()
+    content: string().required('Please enter your comment.')
 });
 
 export default function CreateComment(props: CreateCommentProps) {

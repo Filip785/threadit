@@ -15,9 +15,9 @@ interface IRegisterForm {
 }
 
 const schema = object({
-    username: string().required(),
-    email: string().required().email(),
-    password: string().required(),
+    username: string().required('Please enter username.'),
+    email: string().required('Please enter email.').email('Email needs to be in correct format.'),
+    password: string().required('Please enter password.'),
 });
 
 export default function Registration() {

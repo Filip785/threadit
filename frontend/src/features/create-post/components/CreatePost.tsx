@@ -13,8 +13,8 @@ interface ICreatePostForm {
 }
 
 const schema = object({
-    postTitle: string().required(),
-    postContent: string().required(),
+    postTitle: string().required('Please enter post title.'),
+    postContent: string().required('Please enter post URL.').url('Please enter correct URL.'),
 });
 
 export default function CreatePost() {

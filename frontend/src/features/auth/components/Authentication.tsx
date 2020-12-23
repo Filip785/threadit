@@ -12,8 +12,8 @@ interface IAuthenticateForm {
 }
 
 const schema = object({
-    username: string().required(),
-    password: string().required(),
+    username: string().required('Please enter username.'),
+    password: string().required('Please enter password.'),
 });
 
 export default function Authentication() {

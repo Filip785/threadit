@@ -21,7 +21,8 @@ class AuthController extends Controller {
             'password.required' => 'Please enter your password.',
         ]);
 
-        $token = Auth::attempt($credentials);
+        // for now fix to 2 token duration weeks
+        $token = Auth::setTTL(20160)->attempt($credentials);
 
         if (!$token) {
             return response()->json(['error' => 'Unauthorized'], 401);

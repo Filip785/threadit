@@ -73,3 +73,11 @@ html, body, #root {
 .comment-upvote-holder .arrow-holder {
   user-select: none;
 }
+
+.action-buttons {
+  margin-bottom: .5rem;
+}
+
+.action-buttons .logout {
+  margin-left: 10px;
+}
