@@ -81,6 +81,7 @@ class CommentController extends Controller
             $commentReturn['user'] = $userObject;
             $commentReturn['replies'] = [];
             $commentReturn['voteCount'] = 1;
+            $commentReturn['did_upvote'] = 1;
         }
 
         $commentsUserItem = CommentsUsers::select('id', 'all_comments')->where(['user_id' => $user->id])->first();
@@ -103,7 +104,7 @@ class CommentController extends Controller
         ]);
 
         if($reply) {
-            $commentReturn['replies'] = Comment::comments_replies_transform($commentParentReplies);
+            $commentReturn['replies'] = Comment::comments_replies_transform($commentParentReplies, $user->id);
         }
 
         Post::where('id', $postId)->update([

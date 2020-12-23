@@ -53,10 +53,12 @@ class PostController extends Controller
         if(!$post) {
             return response()->json(['error' => 'Not Found!'], 404);
         }
+
+        $authUser = auth()->user();
         
         $comments = Comment::with(['user:id,username'])->where(['post_id' => $post->id])->get();
 
-        $comments = Comment::comments_replies_transform($comments);
+        $comments = Comment::comments_replies_transform($comments, $authUser ? $authUser->id : null);
 
         return [
             'post' => $post,

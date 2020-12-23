@@ -1,5 +1,5 @@
-import { Formik, FormikProps } from 'formik';
 import React from 'react';
+import { Formik, FormikProps } from 'formik';
 import { Form, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { object, string } from 'yup';
@@ -39,7 +39,8 @@ export default function CreateComment(props: CreateCommentProps) {
                 return (
                     <Form noValidate onSubmit={handleSubmit}>
                         <Form.Group controlId="formContent">
-                            <Form.Control type="text" name="content" value={values.content} onChange={handleChange} isValid={touched.content && !errors.content} />
+                            <Form.Control as='textarea' rows={5} type="text" name="content" value={values.content} onChange={handleChange} isValid={touched.content && !errors.content} placeholder="Write your comment here..." />
+                            
                             <Form.Control.Feedback type='invalid' className='d-block' style={{ marginTop: '1rem' }}>
                                 {errors.content}
                             </Form.Control.Feedback>

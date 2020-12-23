@@ -7,13 +7,14 @@ import { selectAuthUser } from '../../auth/authSlice';
 import { useSelector } from 'react-redux';
 import { DashCircle, PlusCircle } from 'react-bootstrap-icons';
 import Replies from './Replies';
+import CommentUpvote from './CommentUpvote';
 
 interface CommentProps {
     comment: CommentModel;
     post_id: string;
 }
 
-function Comment(props: CommentProps) {
+export default function Comment(props: CommentProps) {
     const [doReply, setDoReply] = useState(false);
     const [hideTree, setHideTree] = useState(false);
     const authUser = useSelector(selectAuthUser);
@@ -21,7 +22,11 @@ function Comment(props: CommentProps) {
     return (
         <div className="comment">
             <div className="comment-info d-flex justify-content-between">
-                <span>u/{props.comment.user.username} wrote:</span>
+                <div className="comment-upvote-holder">
+                    <CommentUpvote pattern={props.comment.pattern} did_upvote={props.comment.did_upvote} commentId={props.comment.id} voteCount={props.comment.voteCount} />
+                    <span>u/{props.comment.user.username} wrote:</span>
+                </div>
+
                 <span>{
                     format(new Date(props.comment.created_at), "dd.MM.yyyy 'at' HH:mm")
                 } {hideTree && <PlusCircle onClick={() => setHideTree(!hideTree)} />}</span>
@@ -62,5 +67,3 @@ function Comment(props: CommentProps) {
         </div>
     );
 }
-
-export default Comment;

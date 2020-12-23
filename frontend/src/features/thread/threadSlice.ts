@@ -3,6 +3,7 @@ import Comment from "../../models/Comment";
 import axios from 'axios';
 import { AppThunk, RootState } from "../../app/store";
 import { Post } from "../../models/Post";
+import _ from 'lodash';
 
 interface ThreadState {
     mainPost: SinglePost | null,
@@ -38,15 +39,32 @@ export const threadSlice = createSlice({
         },
         setCommentReduce(state, action: PayloadAction<Comment>) {
             state.mainPost!.comments = [...state.mainPost!.comments, action.payload];
+        },
+        updateUpvotesReduce(state, action: PayloadAction<{initialIndex: number, voteCount: number, did_upvote: number, pathArray: string[]}>) {
+            const { initialIndex, pathArray, voteCount, did_upvote } = action.payload;
+
+            if(pathArray.length === 0) {
+                // top level comment
+                state.mainPost!.comments = state.mainPost!.comments.map((item, i) => i === initialIndex ? { ...item, voteCount, did_upvote } : item);
+            } else {
+                // deeply nested comment
+                state.mainPost!.comments[initialIndex] = _.set<Comment>(state.mainPost!.comments[initialIndex], [...pathArray, 'voteCount'], voteCount);
+                state.mainPost!.comments[initialIndex] = _.set<Comment>(state.mainPost!.comments[initialIndex], [...pathArray, 'did_upvote'], did_upvote);
+            }
         }
     },
 });
 
 const { setMainPostReduce, setCommentTreeReduce, setCommentReduce } = threadSlice.actions;
+export const { updateUpvotesReduce } = threadSlice.actions;
 
-export const fetchThread = (thread: string): AppThunk => async dispatch => {
+export const fetchThread = (thread: string, apiToken?: string): AppThunk => async dispatch => {
+    const headers = apiToken ? { Authorization: `Bearer ${apiToken}` } : null;
+
     try {
-        const response = await axios.get<SinglePost>(`${process.env.REACT_APP_API_URL}api/post/${thread}`);
+        const response = await axios.get<SinglePost>(`${process.env.REACT_APP_API_URL}api/post/${thread}`, {
+            headers: headers
+        });
         
         dispatch(setMainPostReduce(response.data));
     } catch (err) {
@@ -78,6 +96,18 @@ export const createComment = (content: string, user_id: number, pattern: string 
     } catch (err) {
         console.log('Create Comment error: ', err);
         // to do: error handling
+    }
+};
+
+export const upvoteComment = (pattern: string, apiToken: string): AppThunk => async _dispatch => {
+    try {
+        await axios.post<number>(`${process.env.REACT_APP_API_URL}api/comment_upvote`, { pattern }, {
+            headers: {
+                Authorization: `Bearer ${apiToken}`
+            }
+        });
+    } catch (err) {
+        console.log('Upvote Comment error: ', err);
     }
 };
 

@@ -64,3 +64,12 @@ html, body, #root {
 .hide {
   display: none !important;
 }
+
+.comment-upvote-holder {
+  display: flex;
+  align-items: center;
+}
+
+.comment-upvote-holder .arrow-holder {
+  user-select: none;
+}

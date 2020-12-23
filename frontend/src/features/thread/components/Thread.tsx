@@ -16,8 +16,8 @@ export default function Thread() {
     const authUser = useSelector(selectAuthUser);
 
     useEffect(() => {
-        dispatch(fetchThread(params.thread));
-    }, [dispatch, params.thread]);
+        dispatch(fetchThread(params.thread, authUser!.api_token));
+    }, [dispatch, params.thread, authUser]);
 
     return (
         <div>
@@ -28,9 +28,7 @@ export default function Thread() {
             {!authUser && <h3>To be able to comment either <Link to='/register'>create account</Link> or <Link to='/auth'>login</Link>.</h3>}
 
             <div className="comments">
-                {mainPost?.comments.map(comment => {
-                    return <Comment key={uniqid()} comment={comment} post_id={params.thread} />;
-                })}
+                {mainPost?.comments.map(comment => <Comment key={uniqid()} comment={comment} post_id={params.thread} />)}
             </div>
         </div>
     );

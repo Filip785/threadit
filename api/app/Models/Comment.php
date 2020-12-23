@@ -25,32 +25,41 @@ class Comment extends Model {
         'replies'
     ];
 
-    public static function comments_replies_transform($commentsArray) {
+    public static function comments_replies_transform($commentsArray, $userId = null) {
         foreach($commentsArray as &$item) {
-            $item = self::comment_reply_transform($item);
+            $item = self::comment_reply_transform($item, $userId);
         }
 
         return $commentsArray;
     }
 
-    public static function comment_reply_transform($item) {
+    public static function comment_reply_transform($item, $userId = null) {
         if(!is_array($item['replies'])) {
             $item['replies'] = json_decode($item['replies'], true);
         }
 
         $replyCount = count($item['replies']);
 
+        $patternKey = null;
+
         if(isset($item['pattern'])) {
-            $item['voteCount'] = self::getVoteCount($item['pattern']);
+            $patternKey = $item['pattern'];
         } else {
-            $item['voteCount'] = self::getVoteCount((string) $item->id);
+            $patternKey = (string) $item->id;
+        }
+
+        $item['voteCount'] = self::getVoteCount($patternKey);
+
+        if($userId) {
+            $didUpvote = CommentsUpvotes::where(['pattern' => $patternKey, 'user_id' => $userId])->first();
+            $item['did_upvote'] = ($didUpvote === null) ? 0 : 1;
         }
 
         if($replyCount > 0) {
             $ref = $item['replies'];
 
             foreach($ref as &$reply) {
-                $reply = self::comment_reply_transform($reply);
+                $reply = self::comment_reply_transform($reply, $userId);
             }
 
             $item['replies'] = $ref;
