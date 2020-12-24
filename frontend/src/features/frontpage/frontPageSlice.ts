@@ -62,9 +62,9 @@ export const getFrontPagePosts = (page: number, apiToken: string): AppThunk => a
     }
 };
 
-export const upvotePost = (userId: number, postId: number, apiToken: string): AppThunk => async _dispatch => {
+export const upvotePost = (postId: number, apiToken: string): AppThunk => async _dispatch => {
     try {
-        await axios.post<number>(`${process.env.REACT_APP_API_URL}api/post_upvote`, { userId, postId }, {
+        await axios.post<number>(`${process.env.REACT_APP_API_URL}api/post_upvote`, { postId }, {
             headers: {
                 Authorization: `Bearer ${apiToken}`
             }

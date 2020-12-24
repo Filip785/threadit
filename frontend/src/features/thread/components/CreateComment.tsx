@@ -25,7 +25,7 @@ export default function CreateComment(props: CreateCommentProps) {
 
     return (
         <Formik validationSchema={schema} initialValues={{ content: '' }} onSubmit={(values: ICommentForm) => {
-            dispatch(createComment(values.content, authUser?.id!, props.pattern!, props.post_id, authUser?.api_token!));
+            dispatch(createComment(values.content, props.pattern!, props.post_id, authUser?.api_token!));
         }} validateOnBlur={false} validateOnChange={false}>
             {(props: FormikProps<ICommentForm>) => {
                 const {

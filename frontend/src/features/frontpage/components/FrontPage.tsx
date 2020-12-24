@@ -28,7 +28,7 @@ export default function FrontPage() {
         <>
             <h1>Frontpage!</h1>
 
-            {authUser && <h2>Welcome, <Link to={`/u/${authUser!.username}`}>u/{authUser!.username}</Link></h2>}
+            {authUser && <h2>Welcome, <Link to={`/u/${authUser!.username}`}>/u/{authUser!.username}</Link></h2>}
 
             {!authUser && (
                 <>

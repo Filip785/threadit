@@ -27,13 +27,4 @@ class CommentsUpvotesController extends Controller {
 
         return response()->json(['success' => 'Upvoted!'], 200);
     }
-
-    public function delete(Request $request) {
-        CommentsUpvotes::where([
-            'user_id' => $request->get('user_id'),
-            'pattern' => $request->get('pattern')
-        ])->delete();
-
-        return response()->json(['success' => 'Deleted upvote!'], 200);
-    }
 }

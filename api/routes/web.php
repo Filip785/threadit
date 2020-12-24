@@ -41,10 +41,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
             $router->post('comment/create', 'CommentController@store');
 
             $router->post('comment_upvote', 'CommentsUpvotesController@store');
-            $router->delete('comment_remove_upvote', 'CommentsUpvotesController@delete');
-
             $router->post('post_upvote', 'PostsUpvotesController@store');
-            $router->delete('post_remove_upvote', 'PostsUpvotesController@delete');
         }
     );
 });

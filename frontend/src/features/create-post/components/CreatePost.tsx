@@ -39,7 +39,7 @@ export default function CreatePost() {
                 <h1>Create Post</h1>
 
                 <Formik validationSchema={schema} initialValues={{ postTitle: '', postContent: '' }} onSubmit={(values: ICreatePostForm) => {
-                    dispatch(createPost(values.postTitle, values.postContent, authUser!.id!, authUser!.api_token!));
+                    dispatch(createPost(values.postTitle, values.postContent, authUser!.api_token!));
                 }} validateOnBlur={false} validateOnChange={false}>
                     {(props: FormikProps<ICreatePostForm>) => {
                         const {

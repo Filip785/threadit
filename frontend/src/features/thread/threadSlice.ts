@@ -13,7 +13,6 @@ interface ThreadState {
 interface CreateCommentBodyParams {
     content: string;
     post_id: string;
-    user_id: number;
     reply?: string;
 }
 
@@ -45,11 +44,13 @@ export const threadSlice = createSlice({
 
             if(pathArray.length === 0) {
                 // top level comment
-                state.mainPost!.comments = state.mainPost!.comments.map((item, i) => i === initialIndex ? { ...item, voteCount, did_upvote } : item);
+                state.mainPost!.comments = state.mainPost!.comments.map((item, i) => item.id === initialIndex ? { ...item, voteCount, did_upvote } : item);
             } else {
+                const index = state.mainPost?.comments.findIndex(item => item.id === initialIndex);
+
                 // deeply nested comment
-                state.mainPost!.comments[initialIndex] = _.set<Comment>(state.mainPost!.comments[initialIndex], [...pathArray, 'voteCount'], voteCount);
-                state.mainPost!.comments[initialIndex] = _.set<Comment>(state.mainPost!.comments[initialIndex], [...pathArray, 'did_upvote'], did_upvote);
+                state.mainPost!.comments[index!] = _.set<Comment>(state.mainPost!.comments[index!], [...pathArray, 'voteCount'], voteCount);
+                state.mainPost!.comments[index!] = _.set<Comment>(state.mainPost!.comments[index!], [...pathArray, 'did_upvote'], did_upvote);
             }
         }
     },
@@ -72,8 +73,8 @@ export const fetchThread = (thread: string, apiToken?: string): AppThunk => asyn
     }
 };
 
-export const createComment = (content: string, user_id: number, pattern: string | null, post_id: string, apiToken: string): AppThunk => async dispatch => {
-    let bodyParams: CreateCommentBodyParams = { content, user_id, post_id };
+export const createComment = (content: string, pattern: string | null, post_id: string, apiToken: string): AppThunk => async dispatch => {
+    let bodyParams: CreateCommentBodyParams = { content, post_id };
     let addToTree = false;
 
     if(pattern) {

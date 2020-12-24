@@ -27,7 +27,7 @@ export default function Upvote(props: UpvoteProps) {
                 }
 
                 dispatch(upvotePostReduce(post.id!));
-                dispatch(upvotePost(authUser.id!, post.id!, authUser.api_token!));
+                dispatch(upvotePost(post.id!, authUser.api_token!));
             }} fill='#ff4500' />
             <p className={post.did_upvote ? 'upvoted' : ''}>{post.voteCount}</p>
         </div>

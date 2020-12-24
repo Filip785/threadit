@@ -8,6 +8,7 @@ import { useSelector } from 'react-redux';
 import { DashCircle, PlusCircle } from 'react-bootstrap-icons';
 import Replies from './Replies';
 import CommentUpvote from './CommentUpvote';
+import { Link } from 'react-router-dom';
 
 interface CommentProps {
     comment: CommentModel;
@@ -24,7 +25,7 @@ export default function Comment(props: CommentProps) {
             <div className="comment-info d-flex justify-content-between">
                 <div className="comment-upvote-holder">
                     <CommentUpvote pattern={props.comment.pattern} did_upvote={props.comment.did_upvote} commentId={props.comment.id} voteCount={props.comment.voteCount} />
-                    <span>u/{props.comment.user.username} wrote:</span>
+                    <span><Link to={`/u/${props.comment.user.username}`}>/u/{props.comment.user.username}</Link> wrote:</span>
                 </div>
 
                 <span>{

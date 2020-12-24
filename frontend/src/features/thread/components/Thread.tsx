@@ -27,8 +27,7 @@ export default function Thread(props: ThreadProps) {
     return (
         <div>
             {<Link to={`/p/${props.history?.location.state?.from || '1'}`}>{props.history?.location.state?.from ? 'Go back' : 'Go to homepage'}</Link>}
-            <h1>{mainPost?.post.post_title}</h1>
-            <h3>{mainPost?.post.description}</h3>
+            <h1><a href={mainPost?.post.description} target='_blank' rel='noopener noreferrer'>{mainPost?.post.post_title}</a></h1>
 
             {authUser && <CreateComment post_id={params.thread} />}
             {!authUser && <h3>To be able to comment either <Link to='/register'>create account</Link> or <Link to='/auth'>login</Link>.</h3>}

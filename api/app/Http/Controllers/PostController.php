@@ -36,12 +36,12 @@ class PostController extends Controller
             'description.required' => 'Please enter description.',
         ]);
 
-        $userId = $request->get('user_id');
+        $user = auth()->user();
 
         $post = Post::create([
             'post_title' => $request->get('post_title'),
             'description' => $request->get('description'),
-            'user_id' => $userId
+            'user_id' => $user->id
         ]);
 
         return response()->json(['success' => 'Post created!'], 200);

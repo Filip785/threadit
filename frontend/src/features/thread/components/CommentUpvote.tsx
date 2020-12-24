@@ -41,7 +41,7 @@ export default function CommentUpvote(props: UpvoteProps) {
                     
                     split.forEach((item, i) => {
                         if(i === 0) {
-                            initialIndex = Number(item) - 1;
+                            initialIndex = Number(item);
                             pathArray.push('replies');
                             return;
                         }
@@ -53,7 +53,7 @@ export default function CommentUpvote(props: UpvoteProps) {
                         }
                     });
                 } else {
-                    initialIndex = commentId - 1;
+                    initialIndex = commentId;
                 }
 
                 dispatch(updateUpvotesReduce({ initialIndex, pathArray, voteCount, did_upvote }));

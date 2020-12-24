@@ -26,9 +26,9 @@ export const createPostSlice = createSlice({
 const { createPostReduce } = createPostSlice.actions;
 export const { resetStateReduce } = createPostSlice.actions;
 
-export const createPost = (postTitle: string, postContent: string, userId: number, apiToken: string): AppThunk => async dispatch => {
+export const createPost = (postTitle: string, postContent: string, apiToken: string): AppThunk => async dispatch => {
     try {
-        await axios.post(`${process.env.REACT_APP_API_URL}api/post/create`, { post_title: postTitle, description: postContent, user_id: userId }, {
+        await axios.post(`${process.env.REACT_APP_API_URL}api/post/create`, { post_title: postTitle, description: postContent }, {
             headers: {
                 Authorization: `Bearer ${apiToken}`
             }

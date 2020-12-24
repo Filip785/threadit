@@ -13,10 +13,6 @@ use Illuminate\Support\Facades\DB;
 
 class CommentController extends Controller
 {
-    public function index() {
-        //
-    }
-
     public function store(Request $request) {
         $this->validate($request, [
             'content' => 'required'
@@ -49,7 +45,7 @@ class CommentController extends Controller
             if($replyCount === 1) {
                 $commentParentRepliesCount = count($commentParentReplies);
                 $postTreeId = "$postTreeId||$commentParentRepliesCount";
-                $commentParentReplies[$commentParentRepliesCount] = $this->getInsertObject($request, $postTreeId, $now, $userObject);
+                $commentParentReplies[$commentParentRepliesCount] = $this->getInsertObject($request, $userObject, $postTreeId, $now);
             } else {
                 unset($ids[0]);
 
@@ -63,7 +59,7 @@ class CommentController extends Controller
                 $replyNextIndex = count($refToUpdate);
 
                 $postTreeId = "$postTreeId||$replyNextIndex";
-                $refToUpdate[$replyNextIndex] = $this->getInsertObject($request, $postTreeId, $now, $userObject);
+                $refToUpdate[$replyNextIndex] = $this->getInsertObject($request, $userObject, $postTreeId, $now);
             }
             
             $commentParent->replies = json_encode($commentParentReplies);
@@ -73,7 +69,7 @@ class CommentController extends Controller
             $commentReturn['voteCount'] = Comment::getVoteCount((string) $commentReturn['id']);
         } else {
             // comment is reply directly to the post (treated like a main comment or a parent comment)
-            $comment = Comment::create($this->getInsertObject($request));
+            $comment = Comment::create($this->getInsertObject($request, $userObject));
 
             $postTreeId = strval($comment->id);
 
@@ -114,22 +110,10 @@ class CommentController extends Controller
         return response()->json(['comment' => $commentReturn], 200);
     }
 
-    public function get(Comment $comment) {
-        //
-    }
-
-    public function update(Request $request, Comment $comment) {
-        //
-    }
-
-    public function destroy(Comment $comment) {
-        //
-    }
-
-    protected function getInsertObject(Request $request, $pattern = null, $now = null, $user = null) {
+    protected function getInsertObject(Request $request, $user, $pattern = null, $now = null) {
         $insertObject = [
             'content' => $request->get('content'),
-            'user_id' => $request->get('user_id'),
+            'user_id' => $user['id'],
             'post_id' => $request->get('post_id'),
             'replies' => '[]'
         ];
