@@ -3,7 +3,7 @@ import { Button, Card } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
 import { selectAuthUser, signOutReduce } from '../../auth/authSlice';
-import { getFrontPagePosts, selectPage, selectPosts, setPageReduce } from '../frontPageSlice';
+import { deletePost, deletePostReduce, getFrontPagePosts, selectPage, selectPosts, setPageReduce } from '../frontPageSlice';
 import Upvote from './Upvote';
 
 export default function FrontPage() {
@@ -17,7 +17,7 @@ export default function FrontPage() {
     useEffect(() => {
         const pageParam = Number(params.page);
 
-        if(pageParam !== page) {
+        if (pageParam !== page) {
             dispatch(setPageReduce(pageParam));
         } else {
             dispatch(getFrontPagePosts(page, authUser?.api_token!));
@@ -68,15 +68,18 @@ export default function FrontPage() {
                                     from: page
                                 }
                             }}>Comments ({post.comment_count})</Link>
-                            <Link to="/p/3" style={{ marginLeft: 10 }}>Report</Link>
+                            {authUser?.id === post.user.id && <Button type="button" className="delete" variant="danger" onClick={() => {
+                                dispatch(deletePostReduce(post.id!));
+                                dispatch(deletePost(post.id!, authUser!.api_token!));
+                            }}>Delete</Button>}
                         </Card.Body>
                     </Card>
                 );
             })}
 
             <div className="nav-links">
-                {page !== 1 && <Link to={`/p/${page-1}`}>back</Link>}
-                {posts.length === 20 && <Link to={`/p/${(page+1)}`}>next</Link>}
+                {page !== 1 && <Link to={`/p/${page - 1}`}>back</Link>}
+                {posts.length === 20 && <Link to={`/p/${(page + 1)}`}>next</Link>}
             </div>
         </>
     );

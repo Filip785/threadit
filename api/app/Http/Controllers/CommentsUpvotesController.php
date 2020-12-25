@@ -10,6 +10,7 @@ class CommentsUpvotesController extends Controller {
     public function store(Request  $request) {
         $user = auth()->user();
         $pattern = $request->get('pattern');
+        $postId = $request->get('postId');
 
         $argsArray = ['user_id' => $user->id, 'pattern' => $pattern];
 
@@ -22,6 +23,7 @@ class CommentsUpvotesController extends Controller {
 
         CommentsUpvotes::create([
             'user_id' => $user->id,
+            'post_id' => $postId,
             'pattern' => $pattern
         ]);
 

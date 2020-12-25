@@ -19,6 +19,7 @@ class CommentsUpvotes extends Model {
 
     protected $fillable = [
         'user_id',
+        'post_id',
         'pattern'
     ];
 }

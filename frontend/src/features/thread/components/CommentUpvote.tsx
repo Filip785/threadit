@@ -10,12 +10,13 @@ interface UpvoteProps {
     voteCount: number;
     pattern: string;
     commentId: number;
+    postId: string;
 }
 
 export default function CommentUpvote(props: UpvoteProps) {
     const dispatch = useDispatch();
     const authUser = useSelector(selectAuthUser);
-    let { did_upvote, voteCount, pattern, commentId } = props;
+    let { did_upvote, voteCount, pattern, commentId, postId } = props;
 
     return (
         <div className="arrow-holder">
@@ -57,7 +58,7 @@ export default function CommentUpvote(props: UpvoteProps) {
                 }
 
                 dispatch(updateUpvotesReduce({ initialIndex, pathArray, voteCount, did_upvote }));
-                dispatch(upvoteComment(pattern ? pattern : commentId.toString(), authUser.api_token!));
+                dispatch(upvoteComment(pattern ? pattern : commentId.toString(), postId, authUser.api_token!));
             }} fill='#ff4500' />
             <p className={did_upvote === 1 ? 'upvoted' : ''}>{voteCount}</p>
         </div>

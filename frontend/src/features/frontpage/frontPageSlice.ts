@@ -40,6 +40,9 @@ export const frontPageSlice = createSlice({
         setPageReduce(state, action: PayloadAction<number>) {
             state.page = action.payload;
         },
+        deletePostReduce(state, action: PayloadAction<number>) {
+            state.posts = state.posts.filter(post => post.id !== action.payload);
+        },
         resetStateReduce(state) {
             state.posts = [];
             state.page = 1;
@@ -48,7 +51,7 @@ export const frontPageSlice = createSlice({
 });
 
 const { getFrontPagePostsReduce } = frontPageSlice.actions;
-export const { setPageReduce, resetStateReduce, upvotePostReduce } = frontPageSlice.actions;
+export const { setPageReduce, resetStateReduce, upvotePostReduce, deletePostReduce } = frontPageSlice.actions;
 
 export const getFrontPagePosts = (page: number, apiToken: string): AppThunk => async dispatch => {
     const headers = apiToken ? { Authorization: `Bearer ${apiToken}` } : null;
@@ -71,6 +74,18 @@ export const upvotePost = (postId: number, apiToken: string): AppThunk => async 
         });
     } catch (err) {
         console.log('Get Front Page Posts error: ', err);
+    }
+};
+
+export const deletePost = (postId: number, apiToken: string): AppThunk => async _dispatch => {
+    try {
+        await axios.delete(`${process.env.REACT_APP_API_URL}api/post/delete/${postId}`, {
+            headers: {
+                Authorization: `Bearer ${apiToken}`
+            }
+        });
+    } catch (err) {
+        console.log('Delete Post error: ', err);
     }
 };
 

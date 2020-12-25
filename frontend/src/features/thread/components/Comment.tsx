@@ -24,7 +24,7 @@ export default function Comment(props: CommentProps) {
         <div className="comment">
             <div className="comment-info d-flex justify-content-between">
                 <div className="comment-upvote-holder">
-                    <CommentUpvote pattern={props.comment.pattern} did_upvote={props.comment.did_upvote} commentId={props.comment.id} voteCount={props.comment.voteCount} />
+                    <CommentUpvote pattern={props.comment.pattern} did_upvote={props.comment.did_upvote} commentId={props.comment.id} voteCount={props.comment.voteCount} postId={props.post_id} />
                     <span><Link to={`/u/${props.comment.user.username}`}>/u/{props.comment.user.username}</Link> wrote:</span>
                 </div>
 

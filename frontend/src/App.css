@@ -78,6 +78,6 @@ html, body, #root {
   margin-bottom: .5rem;
 }
 
-.action-buttons .logout {
+.action-buttons .logout, .delete {
   margin-left: 10px;
 }

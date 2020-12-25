@@ -75,11 +75,19 @@ class PostController extends Controller
         }
 
         try {
-            $post->delete();
-
             PostsUpvotes::where([
                 'post_id' => $id
             ])->delete();
+
+            CommentsUpvotes::where([
+                'post_id' => $id
+            ])->delete();
+
+            Comment::where([
+                'post_id' => $id
+            ])->delete();
+
+            $post->delete();
         } catch (\Exception $e) {
             return response()->json(['error' => 'Error while deleting post!'], 400);
         }

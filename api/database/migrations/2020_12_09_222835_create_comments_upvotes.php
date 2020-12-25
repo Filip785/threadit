@@ -16,6 +16,7 @@ class CreateCommentsUpvotes extends Migration
         Schema::create('comments_upvotes', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
+            $table->foreignId('post_id')->constrained();
             $table->string('pattern');
             $table->timestamps();
         });

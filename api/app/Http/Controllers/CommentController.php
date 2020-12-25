@@ -96,6 +96,7 @@ class CommentController extends Controller
         //add initial upvote from the user that posted comment
         CommentsUpvotes::create([
             'user_id' => $user->id,
+            'post_id' => $postId,
             'pattern' => $postTreeId
         ]);
 

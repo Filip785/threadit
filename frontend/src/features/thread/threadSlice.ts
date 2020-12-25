@@ -63,9 +63,7 @@ export const fetchThread = (thread: string, apiToken?: string): AppThunk => asyn
     const headers = apiToken ? { Authorization: `Bearer ${apiToken}` } : null;
 
     try {
-        const response = await axios.get<SinglePost>(`${process.env.REACT_APP_API_URL}api/post/${thread}`, {
-            headers: headers
-        });
+        const response = await axios.get<SinglePost>(`${process.env.REACT_APP_API_URL}api/post/${thread}`, { headers });
         
         dispatch(setMainPostReduce(response.data));
     } catch (err) {
@@ -100,9 +98,9 @@ export const createComment = (content: string, pattern: string | null, post_id: 
     }
 };
 
-export const upvoteComment = (pattern: string, apiToken: string): AppThunk => async _dispatch => {
+export const upvoteComment = (pattern: string, postId: string, apiToken: string): AppThunk => async _dispatch => {
     try {
-        await axios.post<number>(`${process.env.REACT_APP_API_URL}api/comment_upvote`, { pattern }, {
+        await axios.post<number>(`${process.env.REACT_APP_API_URL}api/comment_upvote`, { pattern, postId }, {
             headers: {
                 Authorization: `Bearer ${apiToken}`
             }
