@@ -68,7 +68,7 @@ export default function FrontPage() {
                                     from: page
                                 }
                             }}>Comments ({post.comment_count})</Link>
-                            {authUser?.id === post.user.id && <Button type="button" className="delete" variant="danger" onClick={() => {
+                            {(authUser?.id === post.user.id || authUser?.is_admin === 1) && <Button type="button" className="delete" variant="danger" onClick={() => {
                                 dispatch(deletePostReduce(post.id!));
                                 dispatch(deletePost(post.id!, authUser!.api_token!));
                             }}>Delete</Button>}
