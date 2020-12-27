@@ -21,11 +21,11 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->post('login', 'AuthController@login');
     $router->post('register', 'AuthController@register');
 
-    
+
 
     $router->group(
         ['middleware' => 'neutral'],
-        function() use ($router) {
+        function () use ($router) {
             $router->get('post/all', 'PostController@index');
         }
     );
@@ -33,8 +33,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->get('post/{id}', 'PostController@get');
 
     $router->group(
-        ['middleware' => 'auth:api'], 
-        function() use ($router) {
+        ['middleware' => 'auth:api'],
+        function () use ($router) {
             $router->post('post/create', 'PostController@store');
             $router->delete('post/delete/{id}', 'PostController@delete');
 

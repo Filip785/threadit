@@ -5,10 +5,8 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
-
 use App\Models\User;
 use App\Observers\UserObserver;
-
 use App\Models\Post;
 use App\Observers\PostObserver;
 
@@ -24,7 +22,8 @@ class AppServiceProvider extends ServiceProvider
         //
     }
 
-    public function boot() {
+    public function boot()
+    {
         DB::listen(function ($query) {
             Log::emergency($query->sql);
         });

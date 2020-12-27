@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-
 use App\Models\Comment;
 use App\Models\CommentsUpvotes;
 use App\Models\CommentsUsers;
@@ -13,12 +12,17 @@ use Illuminate\Support\Facades\DB;
 
 class CommentController extends Controller
 {
-    public function store(Request $request) {
-        $this->validate($request, [
-            'content' => 'required'
-        ], [
-            'content.required' => 'Please enter your comment.'
-        ]);
+    public function store(Request $request)
+    {
+        $this->validate(
+            $request,
+            [
+                'content' => 'required'
+            ],
+            [
+                'content.required' => 'Please enter your comment.'
+            ]
+        );
 
         $postTreeId = null;
         $commentReturn = null;
@@ -29,47 +33,61 @@ class CommentController extends Controller
         $user = auth()->user();
         $userObject = ['id' => $user->id, 'username' => $user->username];
 
-        if($reply) {
+        if ($reply) {
             $postTreeId = $reply;
-            
+
             $ids = explode('||', $postTreeId);
-            
+
             $replyCount = count($ids);
 
             $commentParent = Comment::with(['user:id,username'])->find($ids[0]);
             $commentParentReplies = json_decode($commentParent->replies, true);
             $now = Carbon::now();
 
-            // perhaps have another table that stores not normalized references to a specific user comments?
-
-            if($replyCount === 1) {
+            if ($replyCount === 1) {
                 $commentParentRepliesCount = count($commentParentReplies);
                 $postTreeId = "$postTreeId||$commentParentRepliesCount";
-                $commentParentReplies[$commentParentRepliesCount] = $this->getInsertObject($request, $userObject, $postTreeId, $now);
+                $commentParentReplies[$commentParentRepliesCount] = $this->getInsertObject(
+                    $request,
+                    $userObject,
+                    $postTreeId,
+                    $now
+                );
             } else {
                 unset($ids[0]);
 
-                $commentParentReplies = $this->decode_recursive_replies($commentParentReplies);
+                $commentParentReplies = $this->decodeRecurisveReplies(
+                    $commentParentReplies
+                );
+
                 $refToUpdate = &$commentParentReplies;
-                
-                foreach($ids as $id) {
-                    $refToUpdate = &$refToUpdate[$id]['replies'];  
+
+                foreach ($ids as $id) {
+                    $refToUpdate = &$refToUpdate[$id]['replies'];
                 }
 
                 $replyNextIndex = count($refToUpdate);
 
                 $postTreeId = "$postTreeId||$replyNextIndex";
-                $refToUpdate[$replyNextIndex] = $this->getInsertObject($request, $userObject, $postTreeId, $now);
+                $refToUpdate[$replyNextIndex] = $this->getInsertObject(
+                    $request,
+                    $userObject,
+                    $postTreeId,
+                    $now
+                );
             }
-            
+
             $commentParent->replies = json_encode($commentParentReplies);
             $commentParent->update();
 
             $commentReturn = $commentParent->toArray();
-            $commentReturn['voteCount'] = Comment::getVoteCount((string) $commentReturn['id']);
+            $commentReturn['voteCount'] = Comment::getVoteCount(
+                (string) $commentReturn['id']
+            );
         } else {
-            // comment is reply directly to the post (treated like a main comment or a parent comment)
-            $comment = Comment::create($this->getInsertObject($request, $userObject));
+            $comment = Comment::create(
+                $this->getInsertObject($request, $userObject)
+            );
 
             $postTreeId = strval($comment->id);
 
@@ -80,12 +98,17 @@ class CommentController extends Controller
             $commentReturn['did_upvote'] = 1;
         }
 
-        $commentsUserItem = CommentsUsers::select('id', 'all_comments')->where(['user_id' => $user->id])->first();
+        $commentsUserItem = CommentsUsers::select('id', 'all_comments')->where(
+            [
+                'user_id' => $user->id
+            ]
+        )->first();
+
         $postId = $request->get('post_id');
 
         $allCommentsDecoded = json_decode($commentsUserItem->all_comments, true);
 
-        if(!isset($allCommentsDecoded[$postId])) {
+        if (!isset($allCommentsDecoded[$postId])) {
             $allCommentsDecoded[$postId] = [];
         }
 
@@ -94,24 +117,32 @@ class CommentController extends Controller
         $commentsUserItem->update();
 
         //add initial upvote from the user that posted comment
-        CommentsUpvotes::create([
-            'user_id' => $user->id,
-            'post_id' => $postId,
-            'pattern' => $postTreeId
-        ]);
+        CommentsUpvotes::create(
+            [
+                'user_id' => $user->id,
+                'post_id' => $postId,
+                'pattern' => $postTreeId
+            ]
+        );
 
-        if($reply) {
-            $commentReturn['replies'] = Comment::comments_replies_transform($commentParentReplies, $user->id);
+        if ($reply) {
+            $commentReturn['replies'] = Comment::commentRepliesTransform(
+                $commentParentReplies,
+                $user->id
+            );
         }
 
-        Post::where('id', $postId)->update([
-            'comment_count' => DB::raw('comment_count+1')
-        ]);
+        Post::where('id', $postId)->update(
+            [
+                'comment_count' => DB::raw('comment_count+1')
+            ]
+        );
 
         return response()->json(['comment' => $commentReturn], 200);
     }
 
-    protected function getInsertObject(Request $request, $user, $pattern = null, $now = null) {
+    protected function getInsertObject(Request $request, $user, $pattern = null, $now = null)
+    {
         $insertObject = [
             'content' => $request->get('content'),
             'user_id' => $user['id'],
@@ -119,7 +150,7 @@ class CommentController extends Controller
             'replies' => '[]'
         ];
 
-        if($now) {
+        if ($now) {
             $insertObject['pattern'] = $pattern;
             $insertObject['user'] = $user;
             $insertObject['created_at'] = $now;
@@ -129,17 +160,21 @@ class CommentController extends Controller
         return $insertObject;
     }
 
-    protected function decode_recursive_replies($commentParentReplies, bool $with_decode = false) {
-        if($with_decode) {
+    protected function decodeRecurisveReplies($commentParentReplies, bool $with_decode = false)
+    {
+        if ($with_decode) {
             $commentParentReplies = json_decode($commentParentReplies, true);
         }
 
-        foreach($commentParentReplies as &$parentReply) {
-            if($parentReply['replies']) {
+        foreach ($commentParentReplies as &$parentReply) {
+            if ($parentReply['replies']) {
                 // if there are multiple replies dont decode immediately
                 $dec = is_array($parentReply['replies']) ? false : true;
 
-                $parentReply['replies'] = $this->decode_recursive_replies($parentReply['replies'], $dec);
+                $parentReply['replies'] = $this->decodeRecurisveReplies(
+                    $parentReply['replies'],
+                    $dec
+                );
             }
         }
 

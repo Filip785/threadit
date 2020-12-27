@@ -34,16 +34,24 @@ class Post extends Model
         'voteCount'
     ];
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function getVoteCountAttribute() {
+    public function getVoteCountAttribute()
+    {
         return PostsUpvotes::where(['post_id' => $this->id])->count();
     }
 
-    public function didUpvote($userId, $postId) {
-        $upvote = PostsUpvotes::where(['user_id' => $userId, 'post_id' => $postId])->first();
+    public function didUpvote($userId, $postId)
+    {
+        $upvote = PostsUpvotes::where(
+            [
+                'user_id' => $userId,
+                'post_id' => $postId
+            ]
+        )->first();
 
         return ($upvote === null) ? 0 : 1;
     }

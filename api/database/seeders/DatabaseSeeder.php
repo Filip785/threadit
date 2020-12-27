@@ -6,7 +6,6 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Faker;
-
 use App\Models\User;
 use App\Models\Post;
 
@@ -35,7 +34,7 @@ class DatabaseSeeder extends Seeder
             'is_admin' => 0
         ]);
 
-        for($i = 0; $i < 50; $i++) {
+        for ($i = 0; $i < 50; $i++) {
             Post::create([
                 'post_title' => $faker->sentence(5),
                 'description' => $faker->url(),

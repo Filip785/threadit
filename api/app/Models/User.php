@@ -7,13 +7,15 @@ use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
 use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
-
-
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Model implements AuthenticatableContract, AuthorizableContract, JWTSubject
+class User extends Model implements
+    AuthenticatableContract,
+    AuthorizableContract,
+    JWTSubject
 {
-    use Authenticatable, Authorizable;
+    use Authenticatable;
+    use Authorizable;
 
     /**
      * The attributes that are mass assignable.
@@ -53,11 +55,13 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
         return [];
     }
 
-    public function posts() {
+    public function posts()
+    {
         return $this->belongsToMany(Post::class);
     }
 
-    public function comments() {
+    public function comments()
+    {
         return $this->hasMany(Comment::class);
     }
 }

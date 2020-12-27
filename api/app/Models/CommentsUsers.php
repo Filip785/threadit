@@ -13,7 +13,8 @@ use Illuminate\Database\Eloquent\Model;
  * @property int user_id
  * @property array|string all_comments
  */
-class CommentsUsers extends Model {
+class CommentsUsers extends Model
+{
     use HasFactory;
 
     protected $fillable = [

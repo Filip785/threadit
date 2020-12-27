@@ -14,7 +14,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property int user_id
  * @property string pattern
  */
-class CommentsUpvotes extends Model {
+class CommentsUpvotes extends Model
+{
     use HasFactory;
 
     protected $fillable = [

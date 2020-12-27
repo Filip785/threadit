@@ -36,8 +36,8 @@ class NeutralRoute
     public function handle($request, Closure $next, $guard = null)
     {
         $token = $this->auth->setRequest($request)->getToken();
-        
-        if($token){
+
+        if ($token) {
             try {
                 $user = $this->auth->authenticate($token);
             } catch (TokenExpiredException $e) {

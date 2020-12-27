@@ -14,7 +14,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
  * @property int user_id
  * @property int post_id
  */
-class PostsUpvotes extends Model {
+class PostsUpvotes extends Model
+{
     use HasFactory;
 
     protected $fillable = [
