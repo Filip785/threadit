@@ -56,7 +56,7 @@ class CommentController extends Controller
             } else {
                 unset($ids[0]);
 
-                $commentParentReplies = $this->decodeRecurisveReplies(
+                $commentParentReplies = $this->decodeRecursiveReplies(
                     $commentParentReplies
                 );
 
@@ -160,7 +160,7 @@ class CommentController extends Controller
         return $insertObject;
     }
 
-    protected function decodeRecurisveReplies($commentParentReplies, bool $with_decode = false)
+    protected function decodeRecursiveReplies($commentParentReplies, bool $with_decode = false)
     {
         if ($with_decode) {
             $commentParentReplies = json_decode($commentParentReplies, true);
@@ -171,7 +171,7 @@ class CommentController extends Controller
                 // if there are multiple replies dont decode immediately
                 $dec = is_array($parentReply['replies']) ? false : true;
 
-                $parentReply['replies'] = $this->decodeRecurisveReplies(
+                $parentReply['replies'] = $this->decodeRecursiveReplies(
                     $parentReply['replies'],
                     $dec
                 );
